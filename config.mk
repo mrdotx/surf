@@ -8,8 +8,8 @@ PREFIX = /usr/local
 MANPREFIX = ${PREFIX}/share/man
 LIBPREFIX = ${PREFIX}/lib/surf
 
-X11INC = /usr/X11R6/include
-X11LIB = /usr/X11R6/lib
+X11INC = /usr/include/X11
+X11LIB = /usr/lib/X11
 
 GTKINC = `pkg-config --cflags gtk+-3.0 webkit2gtk-4.0`
 GTKLIB = `pkg-config --libs gtk+-3.0 webkit2gtk-4.0`
