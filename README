@@ -47,3 +47,6 @@ Patches
 surf-websearch-20190510-d068a38.diff
 surf-2.0-homepage.diff
 
+Last implemented commit
+-----------------------
+2019-02-08 22:56	Fix vertical scroll directions in the config file	efe

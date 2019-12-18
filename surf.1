@@ -3,15 +3,15 @@
 surf \- simple webkit-based browser
 .SH SYNOPSIS
 .B surf
-.RB [-bBdDfFgGiIkKmMnNpPsSvx]
+.RB [-bBdDfFgGiIkKmMnNpPsStTvwxX]
 .RB [-a\ cookiepolicies]
 .RB [-c\ cookiefile]
+.RB [-C\ stylefile]
 .RB [-e\ xid]
 .RB [-r\ scriptfile]
-.RB [-t\ stylefile]
 .RB [-u\ useragent]
 .RB [-z\ zoomlevel]
-.RB "URI"
+.RB [URI]
 .SH DESCRIPTION
 surf is a simple Web browser based on WebKit/GTK+. It is able
 to display websites and follow links. It supports the XEmbed protocol
@@ -21,24 +21,29 @@ one can point surf to another URI by setting its XProperties.
 .TP
 .B \-a cookiepolicies
 Define the order of
-.I cookie policies.
-The default is "Aa@" but could be
+.I cookie policies\fR.
+The default is "@Aa" but could be
 redefined in the
-.I config.h,
+.IR config.h ,
 with "A" meaning to
 accept all cookies, "a" to deny all cookies and "@", which tells surf to
 accept no third party cookies.
 .TP
 .B \-b
-Disable Scrollbars
+Disable Scrollbars.
 .TP
 .B \-B
-Enable Scrollbars
+Enable Scrollbars.
 .TP
-.B \-c cookiefile 
+.B \-c cookiefile
 Specify the
 .I cookiefile
 to use.
+.TP
+.B \-C stylefile
+Specify the user
+.IR stylefile .
+This does disable the site-specific styles.
 .TP
 .B \-d
 Disable the disk cache.
@@ -48,7 +53,7 @@ Enable the disk cache.
 .TP
 .B \-e xid
 Reparents to window specified by
-.I xid.
+.IR xid .
 .TP
 .B \-f
 Start surf in windowed mode (not fullscreen).
@@ -63,16 +68,16 @@ Disable giving the geolocation to websites.
 Enable giving the geolocation to websites.
 .TP
 .B \-i
-Disable Images
+Disable Images.
 .TP
 .B \-I
-Enable Images
+Enable Images.
 .TP
 .B \-k
-Disable kiosk mode (disable key strokes and right click)
+Disable kiosk mode (disable key strokes and right click).
 .TP
 .B \-K
-Enable kiosk mode (disable key strokes and right click)
+Enable kiosk mode (disable key strokes and right click).
 .TP
 .B \-m
 Disable application of user style sheets.
@@ -87,27 +92,28 @@ Disable the Web Inspector (Developer Tools).
 Enable the Web Inspector (Developer Tools).
 .TP
 .B \-p
-Disable Plugins
+Disable Plugins.
 .TP
 .B \-P
-Enable Plugins
+Enable Plugins.
 .TP
-.B \-r scriptfile 
+.B \-r scriptfile
 Specify the user
-.I scriptfile.
+.IR scriptfile .
 .TP
 .B \-s
-Disable Javascript
+Disable Javascript.
 .TP
 .B \-S
-Enable Javascript
+Enable Javascript.
 .TP
-.B \-t stylefile
-Specify the user
-.I stylefile.
-This does disable the site-specific styles.
+.B \-t
+Disable strict TLS check.
 .TP
-.B \-u useragent 
+.B \-T
+Enable strict TLS check.
+.TP
+.B \-u useragent
 Specify the
 .I useragent
 which surf should use.
@@ -115,16 +121,21 @@ which surf should use.
 .B \-v
 Prints version information to standard output, then exits.
 .TP
-.B \-x
+.B \-w
 Prints xid to standard output. This can be used to script the browser in for
 example
-.BR xdotool(1).
+.BR xdotool(1) .
 .TP
-.B \-z zoomlevel 
+.B -x
+Disable custom certificates.
+.TP
+.B -X
+Enable custom certificates.
+.TP
+.B \-z zoomlevel
 Specify the
 .I zoomlevel
 which surf should use.
-.BR xprop(1).
 .SH USAGE
 .B Escape
 Stops loading current page or stops download.
@@ -157,10 +168,10 @@ Scroll horizontally to the left.
 Zooms page in.
 .TP
 .B Ctrl\-Shift\-j or Ctrl\--
-Zooms page out
+Zooms page out.
 .TP
 .B Ctrl\-Shift\-q
-Resets Zoom
+Resets Zoom.
 .TP
 .B Ctrl\-f and Ctrl\-/
 Opens the search-bar.
@@ -189,12 +200,12 @@ Reloads the website without using the cache.
 .B Ctrl\-y
 Copies current URI to primary selection.
 .TP
-.B Ctrl\-o
-Show the sourcecode of the current page.
+.B Ctrl\-t
+Display the current TLS certificate in a popup window.
 .TP
 .B Ctrl\-Shift\-a
 Toggle through the the
-.I cookie policies.
+.I cookie policies\fR.
 This will not reload the page.
 .TP
 .B Ctrl\-Shift\-b
@@ -208,7 +219,7 @@ Toggle auto-loading of images. This will reload the page.
 .TP
 .B Ctrl\-Shift\-m
 Toggle if the
-.I stylefile 
+.I stylefile
 file should be loaded. This will reload the page.
 .TP
 .B Ctrl\-Shift\-o
@@ -216,6 +227,9 @@ Open the Web Inspector (Developer Tools) window for the current page.
 .TP
 .B Ctrl\-Shift\-s
 Toggle script execution. This will reload the page.
+.TP
+.B Ctrl\-Shift\-t
+Toggle strict TLS check. This will reload the page.
 .TP
 .B Ctrl\-Shift\-v
 Toggle the enabling of plugins on that surf instance. This will reload the
@@ -256,6 +270,15 @@ plugins
 .TP
 .B m M
 styles
+.TP
+.B f F
+frame flattening
+.TP
+.B x X
+custom certificates
+.TP
+.B t T
+strict TLS
 .SH INDICATORS OF WEB PAGE
 The second part of the indicators specifies modes of the web page itself.
 .SS First character: encryption
@@ -264,7 +287,7 @@ The second part of the indicators specifies modes of the web page itself.
 unencrypted
 .TP
 .B T
-encrypted (SSL)
+encrypted (TLS)
 .TP
 .B U
 attempted encryption but failed
@@ -279,10 +302,13 @@ using proxy
 .B SURF_USERAGENT
 If this variable is set upon startup, surf will use it as the
 .I useragent
-string
+string.
 .TP
 .B http_proxy
-If this variable is set and not empty upon startup, surf will use it as the http proxy
+If this variable is set and not empty upon startup, surf will use it as the http proxy.
+.SH SIGNALS
+Surf will reload the current page on
+.BR SIGHUP .
 .SH PLUGINS
 For using plugins in surf, first determine your running architecture. Then get
 the appropriate plugin for that architecture and copy it to
