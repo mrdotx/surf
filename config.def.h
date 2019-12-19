@@ -72,7 +72,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
         .v = (const char *[]){ "/bin/sh", "-c", \
              "prop=\"$(printf '%b' \"$(xprop -id $1 $2 " \
              "| sed \"s/^$2(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\")\" " \
-             "| rofi -dmenu -p \"$4\" -w $1)\" && xprop -id $1 -f $3 8s -set $3 \"$prop\"", \
+             "| rofi -theme klassiker-vertical -dmenu -p \"$4\" -l 1 -w $1)\" && xprop -id $1 -f $3 8s -set $3 \"$prop\"", \
              "surf-setprop", winid, r, s, p, NULL \
         } \
 }
@@ -80,7 +80,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 #define SEARCH() { \
         .v = (const char *[]){ "/bin/sh", "-c", \
              "xprop -id $1 -f $2 8s -set $2 \"" \
-             "$(rofi -dmenu -p Duck: -w $1 < /dev/null)\"", \
+             "$(rofi -theme klassiker-vertical -dmenu -p Duck: -l 1 -w $1 < /dev/null)\"", \
              "surf-search", winid, "_SURF_SEARCH", NULL \
         } \
 }
