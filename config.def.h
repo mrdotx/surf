@@ -3,9 +3,9 @@ static int surfuseragent    = 1;  /* Append Surf version to default WebKit user 
 static char *fulluseragent  = ""; /* Or override the whole user agent string */
 static char *scriptfile     = "~/.config/surf/script.js";
 static char *styledir       = "~/.config/surf/styles/";
-static char *certdir        = "~/.local/share/surf/certificates/";
+static char *certdir        = "~/.config/surf/certificates/";
 static char *cachedir       = "~/.cache/surf/cache/";
-static char *cookiefile     = "~/.local/share/surf/cookies.txt";
+static char *cookiefile     = "~/.cache/surf/cookies.txt";
 static char *searchurl      = "duckduckgo.com/?q=%s";
 static char *dldir          = "~/Downloads/";
 static char *dlstatus       = "~/.cache/surf/dlstatus/";
