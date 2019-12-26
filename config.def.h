@@ -21,11 +21,11 @@ static Parameter defconfig[ParameterLast] = {
 	[AcceleratedCanvas]   =       { { .i = 1 },     },
 	[AccessMicrophone]    =       { { .i = 0 },     },
 	[AccessWebcam]        =       { { .i = 0 },     },
-	[Certificate]         =       { { .i = 0 },     },
+	[Certificate]         =       { { .i = 1 },     },
 	[CaretBrowsing]       =       { { .i = 0 },     },
 	[CookiePolicies]      =       { { .v = "@Aa" }, },
 	[DefaultCharset]      =       { { .v = "UTF-8" }, },
-	[DiskCache]           =       { { .i = 0 },     },
+	[DiskCache]           =       { { .i = 1 },     },
 	[DNSPrefetch]         =       { { .i = 0 },     },
 	[FileURLsCrossAccess] =       { { .i = 0 },     },
 	[FontSize]            =       { { .i = 12 },    },
@@ -38,13 +38,13 @@ static Parameter defconfig[ParameterLast] = {
 	[KioskMode]           =       { { .i = 0 },     },
 	[LoadImages]          =       { { .i = 1 },     },
 	[MediaManualPlay]     =       { { .i = 1 },     },
-	[Plugins]             =       { { .i = 1 },     },
+	[Plugins]             =       { { .i = 0 },     },
 	[PreferredLanguages]  =       { { .v = (char *[]){ NULL } }, },
 	[RunInFullscreen]     =       { { .i = 0 },     },
 	[ScrollBars]          =       { { .i = 1 },     },
 	[ShowIndicators]      =       { { .i = 1 },     },
 	[SiteQuirks]          =       { { .i = 1 },     },
-	[SmoothScrolling]     =       { { .i = 0 },     },
+	[SmoothScrolling]     =       { { .i = 1 },     },
 	[SpellChecking]       =       { { .i = 0 },     },
 	[SpellLanguages]      =       { { .v = ((char *[]){ "en_US", NULL }) }, },
 	[StrictTLS]           =       { { .i = 1 },     },
@@ -83,7 +83,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 #define SEARCH() { \
         .v = (const char *[]){ "/bin/sh", "-c", \
              "xprop -id $1 -f $2 8s -set $2 \"" \
-             "$(rofi -theme klassiker-vertical -dmenu -p Duck: -l 1 -w $1 < /dev/null)\"", \
+             "$(rofi -theme klassiker-vertical -dmenu -p Duck: -l 0 -w $1 < /dev/null)\"", \
              "surf-search", winid, "_SURF_SEARCH", NULL \
         } \
 }
@@ -141,7 +141,9 @@ static SiteSpecific styles[] = {
  */
 static SiteSpecific certs[] = {
 	/* regexp               file in $certdir */
-	{ "://suckless\\.org/", "suckless.org.crt" },
+	/*{ "://suckless\\.org/", "suckless.org.crt" }, */
+	{ "://hermes/", "hermes.crt" },
+	{ "://prometheus/", "prometheus.crt" },
 };
 
 #define MODKEY GDK_CONTROL_MASK
