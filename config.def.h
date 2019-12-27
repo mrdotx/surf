@@ -83,7 +83,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 #define SEARCH() { \
         .v = (const char *[]){ "/bin/sh", "-c", \
              "xprop -id $1 -f $2 8s -set $2 \"" \
-             "$(rofi -theme klassiker-vertical -dmenu -p Duck: -l 0 -w $1 < /dev/null)\"", \
+             "$(rofi -theme klassiker-vertical -dmenu -p DuckDuckGo: -l 0 -w $1 < /dev/null)\"", \
              "surf-search", winid, "_SURF_SEARCH", NULL \
         } \
 }
