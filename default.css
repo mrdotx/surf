@@ -2,7 +2,7 @@
 path:       ~/projects/surf/default.css
 user:       klassiker [mrdotx]
 github:     https://github.com/mrdotx/surf
-date:       2019-12-28 13:53:04
+date:       2019-12-28 14:10:44
 */
 
 * {
@@ -1678,7 +1678,7 @@ summary,
 .global,
 .u-backgroundWhite
  {
-    background-color: #2e2e2e!important;
+    background-color: #191919!important;
 /*  background-image: none !important; */
     color: #cecece !important;
 }
@@ -1695,7 +1695,7 @@ h3,
 h4,
 h5,
 h6 {
-    background-color: #2e2e2e !important;
+    background-color: #191919 !important;
 }
 
 nav,
@@ -1706,7 +1706,7 @@ nav,
 }
 
 .blob-code span {
-    background-color: #2e2e2e !important;
+    background-color: #191919 !important;
 }
 .highlight span {
     background-color: #296187 !important;
