@@ -2,7 +2,7 @@
 path:       ~/projects/surf/default.css
 user:       klassiker [mrdotx]
 github:     https://github.com/mrdotx/surf
-date:       2019-12-28 14:10:44
+date:       2019-12-30 20:32:49
 */
 
 * {
@@ -1700,9 +1700,8 @@ h6 {
 
 nav,
 #mainbar,
-#archnavbar,
- {
-    background-color: #f94109 !important;
+#archnavbar {
+    background-color: #191919 !important;
 }
 
 .blob-code span {
