@@ -6,9 +6,9 @@ static char *styledir       = "~/.config/surf/styles/";
 static char *certdir        = "~/.config/surf/certificates/";
 static char *cachedir       = "~/.cache/surf/cache/";
 static char *cookiefile     = "~/.cache/surf/cookies.txt";
-static char *searchurl      = "duckduckgo.com/?q=%s";
-static char *dldir          = "~/Downloads/";
 static char *dlstatus       = "~/.cache/surf/dlstatus/";
+static char *dldir          = "~/Downloads/";
+static char *searchurl      = "duckduckgo.com/?q=%s";
 
 /* Webkit default features */
 /* Highest priority value will be used.
