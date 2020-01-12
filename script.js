@@ -2,7 +2,7 @@
 path:       ~/projects/surf/script.js
 user:       klassiker [mrdotx]
 github:     https://github.com/mrdotx/surf
-date:       2019-12-26 13:24:15
+date:       2020-01-12 11:27:12
 */
 
 var hint_num_str = '';
@@ -190,8 +190,8 @@ document.addEventListener( 'keydown', initKeyBind, false );
 function initKeyBind(e){
 	var t = e.target;
 	if( t.nodeType == 1){
-		addKeyBind( 'f', 'hintMode()', e );
-		addKeyBind( 'F', 'hintMode(true)', e );
+		addKeyBind( 'C-f', 'hintMode()', e );
+		addKeyBind( 'C-F', 'hintMode(true)', e );
 		addKeyBind( 'C-c', 'removeHints()', e );
 	}
 }

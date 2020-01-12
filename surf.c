@@ -206,6 +206,10 @@ static void decidenewwindow(WebKitPolicyDecision *d, Client *c);
 static void decideresource(WebKitPolicyDecision *d, Client *c);
 static void insecurecontent(WebKitWebView *v, WebKitInsecureContentEvent e,
                             Client *c);
+static void downloadstarted(WebKitWebContext *wc, WebKitDownload *d,
+                            Client *c);
+static void responsereceived(WebKitDownload *d, GParamSpec *ps, Client *c);
+static void download(Client *c, WebKitURIResponse *r);
 static void webprocessterminated(WebKitWebView *v,
                                  WebKitWebProcessTerminationReason r,
                                  Client *c);
@@ -235,17 +239,6 @@ static void search(Client *c, const Arg *a);
 static void clicknavigate(Client *c, const Arg *a, WebKitHitTestResult *h);
 static void clicknewwindow(Client *c, const Arg *a, WebKitHitTestResult *h);
 static void clickexternplayer(Client *c, const Arg *a, WebKitHitTestResult *h);
-
-/* download-console */
-static void downloadstarted(WebKitWebContext *wc, WebKitDownload *d,
-                            Client *c);
-static void downloadfailed(WebKitDownload *d, GParamSpec *ps, void *arg);
-static void downloadfinished(WebKitDownload *d, GParamSpec *ps, void *arg);
-static gboolean decidedestination(WebKitDownload *d,
-                                  gchar *suggested_filename, void *arg);
-static void printprogress(WebKitDownload *d, GParamSpec *ps, void *arg);
-static void logdownload(WebKitDownload *d, gchar *tail);
-static void spawndls(Client *c, const Arg *a);
 
 static char winid[64];
 static char togglestats[12];
@@ -351,8 +344,6 @@ setup(void)
 	scriptfile = buildfile(scriptfile);
 	cachedir   = buildpath(cachedir);
 	certdir    = buildpath(certdir);
-	dlstatus   = buildpath(dlstatus);
-	dldir      = buildpath(dldir);
 
 	gdkkb = gdk_seat_get_keyboard(gdk_display_get_default_seat(gdpy));
 
@@ -1105,8 +1096,6 @@ cleanup(void)
 	g_free(scriptfile);
 	g_free(stylefile);
 	g_free(cachedir);
-	g_free(dldir);
-	g_free(dlstatus);
 	XCloseDisplay(dpy);
 }
 
@@ -1745,7 +1734,8 @@ decideresource(WebKitPolicyDecision *d, Client *c)
 	if (webkit_response_policy_decision_is_mime_type_supported(r)) {
 		webkit_policy_decision_use(d);
 	} else {
-		webkit_policy_decision_download(d);
+		webkit_policy_decision_ignore(d);
+		download(c, res);
 	}
 }
 
@@ -1753,6 +1743,27 @@ void
 insecurecontent(WebKitWebView *v, WebKitInsecureContentEvent e, Client *c)
 {
 	c->insecure = 1;
+}
+
+void
+downloadstarted(WebKitWebContext *wc, WebKitDownload *d, Client *c)
+{
+	g_signal_connect(G_OBJECT(d), "notify::response",
+	                 G_CALLBACK(responsereceived), c);
+}
+
+void
+responsereceived(WebKitDownload *d, GParamSpec *ps, Client *c)
+{
+	download(c, webkit_download_get_response(d));
+	webkit_download_cancel(d);
+}
+
+void
+download(Client *c, WebKitURIResponse *r)
+{
+	Arg a = (Arg)DOWNLOAD(webkit_uri_response_get_uri(r), geturi(c));
+	spawn(c, &a);
 }
 
 void
@@ -1987,81 +1998,6 @@ clickexternplayer(Client *c, const Arg *a, WebKitHitTestResult *h)
 	Arg arg;
 
 	arg = (Arg)VIDEOPLAY(webkit_hit_test_result_get_media_uri(h));
-	spawn(c, &arg);
-}
-
-/* download-console */
-
-void
-downloadstarted(WebKitWebContext *wc, WebKitDownload *d, Client *c)
-{
-	webkit_download_set_allow_overwrite(d, TRUE);
-	g_signal_connect(G_OBJECT(d), "decide-destination",
-	                 G_CALLBACK(decidedestination), NULL);
-	g_signal_connect(G_OBJECT(d), "notify::estimated-progress",
-	                 G_CALLBACK(printprogress), NULL);
-	g_signal_connect(G_OBJECT(d), "failed",
-	                 G_CALLBACK(downloadfailed), NULL);
-	g_signal_connect(G_OBJECT(d), "finished",
-	                 G_CALLBACK(downloadfinished), NULL);
-}
-
-void
-downloadfailed(WebKitDownload *d, GParamSpec *ps, void *arg)
-{
-	logdownload(d, " -- FAILED");
-}
-
-void
-downloadfinished(WebKitDownload *d, GParamSpec *ps, void *arg)
-{
-	logdownload(d, " -- COMPLETED");
-}
-
-gboolean
-decidedestination(WebKitDownload *d, gchar *suggested_filename, void *arg)
-{
-	gchar *dest;
-	dest = g_strdup_printf("file://%s/%s", dldir, suggested_filename);
-	webkit_download_set_destination(d, dest);
-	return TRUE;
-}
-
-void
-printprogress(WebKitDownload *d, GParamSpec *ps, void *arg)
-{
-	logdownload(d, "");
-}
-
-void
-logdownload(WebKitDownload *d, gchar *tail)
-{
-	gchar *filename, *statfile;
-	FILE *stat;
-
-	filename = g_path_get_basename(webkit_download_get_destination(d));
-	statfile = g_strdup_printf("%s/%s", dlstatus, filename);
-
-	if ((stat = fopen(statfile, "w")) == NULL) {
-		perror("dlstatus");
-	} else {
-		fprintf(stat, "%s: %d%% (%d.%ds)%s\n",
-		        filename,
-		        (int)(webkit_download_get_estimated_progress(d) * 100),
-		        (int) webkit_download_get_elapsed_time(d),
-		        (int)(webkit_download_get_elapsed_time(d) * 100),
-		        tail);
-		fclose(stat);
-	}
-
-	g_free(statfile);
-	g_free(filename);
-}
-
-void
-spawndls(Client *c, const Arg *a)
-{
-	Arg arg = (Arg)DLSTATUS;
 	spawn(c, &arg);
 }
 

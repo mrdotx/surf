@@ -6,8 +6,6 @@ static char *styledir       = "~/.config/surf/styles/";
 static char *certdir        = "~/.config/surf/certificates/";
 static char *cachedir       = "/tmp/surf/cache/";
 static char *cookiefile     = "~/.cache/surf/cookies.txt";
-static char *dlstatus       = "~/.cache/surf/dlstatus/";
-static char *dldir          = "~/Downloads/";
 static char *searchurl      = "duckduckgo.com/?q=%s";
 
 /* Webkit default features */
@@ -89,12 +87,13 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 }
 
 /* DOWNLOAD(URI, referer) */
-#define DLSTATUS { \
-        .v = (const char *[]){ "st", "-e", "/bin/sh", "-c",\
-             "while true; do cat $1/* 2>/dev/null || echo \"no hay descargas\";"\
-             "A=; read A; "\
-             "if [ $A = \"clean\" ]; then rm $1/*; fi; clear; done",\
-             "surf-dlstatus", dlstatus, NULL } \
+#define DOWNLOAD(u, r) { \
+	.v = (char *[]){ "/bin/sh", "-c", \
+		"st -e /bin/sh -c \"aria2c -U '$1'" \
+		" --referer '$2' --load-cookies $3 --save-cookies $3 '$0';" \
+		" sleep 3;\"", \
+		u, useragent, r, cookiefile, NULL \
+	} \
 }
 
 /* PLUMB(URI) */
@@ -209,9 +208,6 @@ static Key keys[] = {
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_b,      toggle,     { .i = ScrollBars } },
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_t,      toggle,     { .i = StrictTLS } },
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_m,      toggle,     { .i = Style } },
-
-	/* download-console */
-	{ 0,                     GDK_KEY_d,      spawndls,   { 0 } },
 };
 
 /* button definitions */

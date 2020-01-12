@@ -21,7 +21,7 @@ necessary as root):
 Running surf
 ------------
 run
-	surf [URI]
+    surf [URI]
 
 See the manpage for further options.
 
@@ -30,7 +30,7 @@ Running surf in tabbed
 For running surf in tabbed[1] there is a script included in the distribution,
 which is run like this:
 
-	surf-open.sh [URI]
+    surf-open.sh [URI]
 
 Further invocations of the script will run surf with the specified URI in this
 instance of tabbed.
@@ -42,12 +42,15 @@ Version
 -------
 2.0
 
+Download
+--------
+aria2
+
 Patches
 -------
 surf-bookmarks-20170722-723ff26.diff
 surf-modal-20190209-d068a38.diff
 surf-websearch-20190510-d068a38.diff
-surf-dlconsole-20190919-d068a38.diff
 
 Last implemented commit
 -----------------------
