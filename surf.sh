@@ -3,9 +3,9 @@
 # path:       ~/projects/surf/surf.sh
 # user:       klassiker [mrdotx]
 # github:     https://github.com/mrdotx/surf
-# date:       2020-01-11 13:51:09
+# date:       2020-01-12 21:32:33
 
-xidfile="/tmp/tabbed-surf.xid"
+xidfile="/tmp/surf/tabbed-surf.xid"
 uri=""
 
 if [ "$#" -gt 0 ];
