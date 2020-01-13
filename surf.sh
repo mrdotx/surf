@@ -3,7 +3,7 @@
 # path:       ~/projects/surf/surf.sh
 # user:       klassiker [mrdotx]
 # github:     https://github.com/mrdotx/surf
-# date:       2020-01-12 21:32:33
+# date:       2020-01-13T12:10:04+0100
 
 xidfile="/tmp/surf/tabbed-surf.xid"
 uri=""
