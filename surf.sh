@@ -3,13 +3,16 @@
 # path:       ~/projects/surf/surf.sh
 # user:       klassiker [mrdotx]
 # github:     https://github.com/mrdotx/surf
-# date:       2020-01-13T12:10:04+0100
+# date:       2020-01-13T17:50:32+0100
 
 xidfile="/tmp/surf/tabbed-surf.xid"
 uri=""
 
-if [ "$#" -gt 0 ];
-then
+if [ ! -d /tmp/surf ]; then
+    mkdir -p "/tmp/surf"
+fi
+
+if [ "$#" -gt 0 ]; then
     uri="$1"
 fi
 
