@@ -3,10 +3,10 @@
 # path:       ~/projects/surf/bookmarks.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/surf
-# date:       2020-02-03T13:48:51+0100
+# date:       2020-02-24T13:48:14+0100
 
 # copy bookmarks from firefox
-#echo 'select url from moz_bookmarks, moz_places where moz_places.id=moz_bookmarks.fk;' \
+#printf 'select url from moz_bookmarks, moz_places where moz_places.id=moz_bookmarks.fk;\n' \
 #    | sqlite3 ~/.mozilla/firefox/*.default-*/places.sqlite \
 #    | awk -F '//' '{print $2}' \
 #    | sed '/^$/d' \
