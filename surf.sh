@@ -3,18 +3,16 @@
 # path:       ~/repos/surf/surf.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/surf
-# date:       2020-02-28T08:29:49+0100
+# date:       2020-03-19T14:25:21+0100
 
 xidfile="/tmp/surf/tabbed-surf.xid"
 uri=""
 
-if [ ! -d /tmp/surf ]; then
-    mkdir -p "/tmp/surf"
-fi
+[ ! -d /tmp/surf ] \
+    && mkdir -p "/tmp/surf"
 
-if [ "$#" -gt 0 ]; then
-    uri="$1"
-fi
+[ "$#" -gt 0 ] \
+    && uri="$1"
 
 runtabbed() {
     tabbed -cdn tabbed-surf -r 2 surf -e '' "$uri" >"$xidfile" 2>/dev/null &
