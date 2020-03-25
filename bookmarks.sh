@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# path:       ~/repos/surf/bookmarks.sh
+# path:       ~/.local/share/repos/surf/bookmarks.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/surf
-# date:       2020-02-28T08:29:31+0100
+# date:       2020-03-25T23:35:16+0100
 
 # copy bookmarks from firefox
 #printf 'select url from moz_bookmarks, moz_places where moz_places.id=moz_bookmarks.fk;\n' \

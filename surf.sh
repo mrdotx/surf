@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# path:       ~/repos/surf/surf.sh
+# path:       ~/.local/share/repos/surf/surf.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/surf
-# date:       2020-03-19T14:25:21+0100
+# date:       2020-03-25T23:35:33+0100
 
 xidfile="/tmp/surf/tabbed-surf.xid"
 uri=""
