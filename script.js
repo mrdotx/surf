@@ -2,7 +2,7 @@
 path:       /home/klassiker/.config/surf/script.js
 author:     klassiker [mrdotx]
 github:     https://github.com/mrdotx/surf
-date:       2020-04-29T10:57:50+0200
+date:       2020-05-22T16:16:09+0200
 */
 
 var hint_num_str = '';
@@ -24,7 +24,7 @@ function hintMode(newtab){
 }
 
 function hintHandler(e){
-	e.preventDefault();  //Stop Default Event 
+	e.preventDefault();  //Stop Default Event
 	var pressedKey = get_key(e);
 	if (pressedKey == 'Enter') {
 		if (hint_num_str == '')
@@ -59,10 +59,10 @@ function setHighlight(elem, is_active) {
 }
 
 function setHintRules() {
-	 if (document.styleSheets.length < 1) {
-	    var style = document.createElement("style");
-	    style.appendChild(document.createTextNode(""));
-	    document.head.appendChild(style);
+	if (document.styleSheets.length < 1) {
+		var style = document.createElement("style");
+		style.appendChild(document.createTextNode(""));
+		document.head.appendChild(style);
 	}
 	var ss = document.styleSheets[0];
 	ss.insertRule('a[highlight=hint_elem] {background-color: yellow}', 0);
@@ -130,7 +130,7 @@ function setHints() {
 			hint_elems.push(elem);
 			setHighlight(elem, false);
 			var span = document.createElement('span');
-			span.style.cssText = [ 
+			span.style.cssText = [
 				'left: ', elem_left, 'px;',
 				'top: ', elem_top, 'px;',
 				'position: absolute;',
@@ -180,7 +180,7 @@ function removeHints() {
 function addKeyBind( key, func, eve ){
 	var pressedKey = get_key(eve);
 	if( pressedKey == key ){
-		eve.preventDefault();  //Stop Default Event 
+		eve.preventDefault();  //Stop Default Event
 		eval(func);
 	}
 }
@@ -298,7 +298,7 @@ function get_key(evt){
 		meta = (evt.metaKey || evt.altKey) ? 'M-' : '',
 		shift = evt.shiftKey ? 'S-' : '';
 	if (evt.shiftKey){
-		if (/^[a-z]$/.test(key)) 
+		if (/^[a-z]$/.test(key))
 			return ctrl+meta+key.toUpperCase();
 		if (/^[0-9]$/.test(key)) {
 			switch(key) {
@@ -309,7 +309,7 @@ function get_key(evt){
 			};
 			return key;
 		}
-		if (/^(Enter|Space|BackSpace|Tab|Esc|Home|End|Left|Right|Up|Down|PageUp|PageDown|F(\d\d?))$/.test(key)) 
+		if (/^(Enter|Space|BackSpace|Tab|Esc|Home|End|Left|Right|Up|Down|PageUp|PageDown|F(\d\d?))$/.test(key))
 			return ctrl+meta+shift+key;
 	}
 	return ctrl+meta+key;
