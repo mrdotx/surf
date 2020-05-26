@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# path:       ~/.local/share/repos/surf/surf.sh
+# path:       /home/klassiker/.local/share/repos/surf/surf.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/surf
-# date:       2020-03-25T23:35:33+0100
+# date:       2020-05-26T12:38:29+0200
 
 xidfile="/tmp/surf/tabbed-surf.xid"
 uri=""
@@ -14,7 +14,7 @@ uri=""
 [ "$#" -gt 0 ] \
     && uri="$1"
 
-runtabbed() {
+runtabbed(){
     tabbed -cdn tabbed-surf -r 2 surf -e '' "$uri" >"$xidfile" 2>/dev/null &
 }
 
