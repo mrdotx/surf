@@ -88,12 +88,11 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 
 /* DOWNLOAD(URI, referer) */
 #define DOWNLOAD(u, r) { \
-    .v = (char *[]){ "/bin/sh", "-c", \
-        "st -e /bin/sh -c \"aria2c -U '$1'" \
-        " --referer '$2' --load-cookies $3 --save-cookies $3 '$0';" \
-        " sleep 3;\"", \
-        u, useragent, r, cookiefile, NULL \
-    } \
+        .v = (char *[]){ "/bin/sh", "-c", \
+             "st -e /bin/sh -c \"aria2c -U '$1'" \
+             "--referer '$2' --load-cookies $3 --save-cookies $3 '$0';" \
+             "sleep 3;\"", u, useragent, r, cookiefile, NULL \
+        } \
 }
 
 /* PLUMB(URI) */
