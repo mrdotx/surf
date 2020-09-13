@@ -3,13 +3,12 @@
 # path:       /home/klassiker/.local/share/repos/surf/surf.sh
 # author:     klassiker [mrdotx]
 # github:     https://github.com/mrdotx/surf
-# date:       2020-06-06T09:27:07+0200
+# date:       2020-09-14T00:02:30+0200
 
 xidfile="/tmp/surf/tabbed-surf.xid"
 uri=""
 
-[ ! -d /tmp/surf ] \
-    && mkdir -p "/tmp/surf"
+mkdir -p "/tmp/surf"
 
 [ "$#" -gt 0 ] \
     && uri="$1"
