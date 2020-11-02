@@ -30,7 +30,7 @@ Running surf in tabbed
 For running surf in tabbed[1] there is a script included in the distribution,
 which is run like this:
 
-    surf-open.sh [URI]
+    surf.sh [URI]
 
 Further invocations of the script will run surf with the specified URI in this
 instance of tabbed.
@@ -54,4 +54,4 @@ surf-websearch-20190510-d068a38.diff
 
 Last implemented commit
 -----------------------
-2019-02-08 22:56	Fix vertical scroll directions in the config file	efe
+2020-05-02 13:50	Simplify communication with webext	Quentin Rameau

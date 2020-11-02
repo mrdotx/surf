@@ -5,13 +5,12 @@
 include config.mk
 
 SRC = surf.c
-CSRC = common.c
-WEBEXTSRC = libsurf-webext.c
+WSRC = webext-surf.c
 OBJ = $(SRC:.c=.o)
-COBJ = $(CSRC:.c=.o)
-WEBEXTOBJ = $(WEBEXTSRC:.c=.o)
+WOBJ = $(WSRC:.c=.o)
+WLIB = $(WSRC:.c=.so)
 
-all: options libsurf-webext.so surf
+all: options surf $(WLIB)
 
 options:
 	@echo surf build options:
@@ -23,26 +22,23 @@ options:
 .c.o:
 	$(CC) $(SURFCFLAGS) $(CFLAGS) -c $<
 
+.o.so:
+	$(CC) -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $< $(WEBEXTLIBS)
+
 config.h:
 	cp config.def.h $@
 
-$(OBJ): config.h common.h config.mk
-$(COBJ): config.h common.h config.mk
-$(WEBEXTOBJ): config.h common.h config.mk
+$(OBJ) $(WOBJ): config.h common.h config.mk
 
-$(WEBEXTOBJ): $(WEBEXTSRC)
-	$(CC) $(WEBEXTCFLAGS) $(CFLAGS) -c $(WEBEXTSRC)
+surf: $(OBJ)
+	$(CC) $(SURFLDFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
-libsurf-webext.so: $(WEBEXTOBJ) $(COBJ)
-	$(CC) -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ \
-	    $(WEBEXTOBJ) $(COBJ) $(WEBEXTLIBS)
-
-surf: $(OBJ) $(COBJ)
-	$(CC) $(SURFLDFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(COBJ) $(LIBS)
+$(WOBJ):
+	$(CC) $(WEBEXTCFLAGS) $(CFLAGS) -c $(@:.o=.c)
 
 clean:
-	rm -f surf $(OBJ) $(COBJ)
-	rm -f libsurf-webext.so $(WEBEXTOBJ)
+	rm -f surf $(OBJ)
+	rm -f $(WLIB) $(WOBJ)
 
 distclean: clean
 	rm -f config.h surf-$(VERSION).tar.gz
@@ -51,7 +47,7 @@ dist: distclean
 	mkdir -p surf-$(VERSION)
 	cp -R LICENSE Makefile config.mk config.def.h README \
 	    surf-open.sh arg.h TODO.md surf.png \
-	    surf.1 $(SRC) $(WEBEXTSRC) surf-$(VERSION)
+	    surf.1 $(SRC) $(CSRC) $(WSRC) surf-$(VERSION)
 	tar -cf surf-$(VERSION).tar surf-$(VERSION)
 	gzip surf-$(VERSION).tar
 	rm -rf surf-$(VERSION)
@@ -61,8 +57,10 @@ install: all
 	cp -f surf $(DESTDIR)$(PREFIX)/bin
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/surf
 	mkdir -p $(DESTDIR)$(LIBDIR)
-	cp -f libsurf-webext.so $(DESTDIR)$(LIBDIR)
-	chmod 644 $(DESTDIR)$(LIBDIR)/libsurf-webext.so
+	cp -f $(WLIB) $(DESTDIR)$(LIBDIR)
+	for wlib in $(WLIB); do \
+	    chmod 644 $(DESTDIR)$(LIBDIR)/$$wlib; \
+	done
 	mkdir -p $(DESTDIR)$(MANPREFIX)/man1
 	sed "s/VERSION/$(VERSION)/g" < surf.1 > $(DESTDIR)$(MANPREFIX)/man1/surf.1
 	chmod 644 $(DESTDIR)$(MANPREFIX)/man1/surf.1
@@ -70,8 +68,10 @@ install: all
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/surf
 	rm -f $(DESTDIR)$(MANPREFIX)/man1/surf.1
-	rm -f $(DESTDIR)$(LIBDIR)/libsurf-webext.so
+	for wlib in $(WLIB); do \
+	    rm -f $(DESTDIR)$(LIBDIR)/$$wlib; \
+	done
 	- rmdir $(DESTDIR)$(LIBDIR)
 
 .SUFFIXES: .so .o .c
-.PHONY: all options clean-dist clean dist install uninstall
+.PHONY: all options distclean clean dist install uninstall

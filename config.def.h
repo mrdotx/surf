@@ -7,6 +7,11 @@ static char *certdir        = "~/.config/surf/certificates/";
 static char *cachedir       = "/tmp/surf/cache/";
 static char *cookiefile     = "~/.cache/surf/cookies.txt";
 static char *searchurl      = "duckduckgo.com/?q=%s";
+static char **plugindirs    = (char*[]){
+    "~/.surf/plugins/",
+    LIBPREFIX "/mozilla/plugins/",
+    NULL
+};
 
 /* Webkit default features */
 /* Highest priority value will be used.
@@ -25,6 +30,7 @@ static Parameter defconfig[ParameterLast] = {
     [DefaultCharset]      =       { { .v = "UTF-8" }, },
     [DiskCache]           =       { { .i = 1 },     },
     [DNSPrefetch]         =       { { .i = 0 },     },
+    [Ephemeral]           =       { { .i = 0 },     },
     [FileURLsCrossAccess] =       { { .i = 0 },     },
     [FontSize]            =       { { .i = 12 },    },
     [FrameFlattening]     =       { { .i = 0 },     },
@@ -70,28 +76,28 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 /* SETPROP(readprop, setprop, prompt)*/
 #define SETPROP(r, s, p) { \
         .v = (const char *[]){ "/bin/sh", "-c", \
-             "prop=\"$(printf '%b' \"$(xprop -id $1 $2 " \
-             "| sed \"s/^$2(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\" && cat ~/.config/surf/bookmarks)\" " \
-             "| dmenu -b -l 10 -p \"$4\" -w $1)\" && " \
-             "xprop -id $1 -f $3 8s -set $3 \"$prop\"", \
-             "surf-setprop", winid, r, s, p, NULL \
+            "prop=\"$(printf '%b' \"$(xprop -id $1 $2 " \
+            "| sed \"s/^$2(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\" && cat ~/.config/surf/bookmarks)\" " \
+            "| dmenu -b -l 10 -p \"$4\" -w $1)\" && " \
+            "xprop -id $1 -f $3 8s -set $3 \"$prop\"", \
+            "surf-setprop", winid, r, s, p, NULL \
         } \
 }
 
 #define SEARCH() { \
         .v = (const char *[]){ "/bin/sh", "-c", \
-             "xprop -id $1 -f $2 8s -set $2 \"" \
-             "$(dmenu -b -p Search: -w $1 < /dev/null)\"", \
-             "surf-search", winid, "_SURF_SEARCH", NULL \
+            "xprop -id $1 -f $2 8s -set $2 \"" \
+            "$(dmenu -b -p Search: -w $1 < /dev/null)\"", \
+            "surf-search", winid, "_SURF_SEARCH", NULL \
         } \
 }
 
 /* DOWNLOAD(URI, referer) */
 #define DOWNLOAD(u, r) { \
         .v = (char *[]){ "/bin/sh", "-c", \
-             "st -e /bin/sh -c \"aria2c -U '$1'" \
-             "--referer '$2' --load-cookies $3 --save-cookies $3 '$0';" \
-             "sleep 3;\"", u, useragent, r, cookiefile, NULL \
+            "st -e /bin/sh -c \"aria2c -U '$1'" \
+            "--referer '$2' --load-cookies $3 --save-cookies $3 '$0';" \
+            "sleep 3;\"", u, useragent, r, cookiefile, NULL \
         } \
 }
 
@@ -101,7 +107,7 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
  */
 #define PLUMB(u) {\
         .v = (const char *[]){ "/bin/sh", "-c", \
-             "xdg-open \"$0\"", u, NULL \
+            "xdg-open \"$0\"", u, NULL \
         } \
 }
 
@@ -115,11 +121,11 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 /* BM_ADD(readprop) */
 #define BM_ADD(r) {\
         .v = (const char *[]){ "/bin/sh", "-c", \
-             "(echo $(xprop -id $0 $1) | cut -d '\"' -f2 " \
-             "| sed 's/.*https*:\\/\\/\\(www\\.\\)\\?//' && cat ~/.config/surf/bookmarks) " \
-             "| awk '!seen[$0]++' > ~/.config/surf/bookmarks.tmp && " \
-             "mv ~/.config/surf/bookmarks.tmp ~/.config/surf/bookmarks", \
-             winid, r, NULL \
+            "(echo $(xprop -id $0 $1) | cut -d '\"' -f2 " \
+            "| sed 's/.*https*:\\/\\/\\(www\\.\\)\\?//' && cat ~/.config/surf/bookmarks) " \
+            "| awk '!seen[$0]++' > ~/.config/surf/bookmarks.tmp && " \
+            "mv ~/.config/surf/bookmarks.tmp ~/.config/surf/bookmarks", \
+            winid, r, NULL \
         } \
 }
 
@@ -154,6 +160,7 @@ static SiteSpecific certs[] = {
 static Key keys[] = {
     /* modifier              keyval          function    arg */
     { 0,                     GDK_KEY_g,      spawn,      SETPROP("_SURF_URI", "_SURF_GO", PROMPT_GO) },
+    { 0,                     GDK_KEY_f,      spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
     { 0,                     GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
     { 0,                     GDK_KEY_s,      spawn,      SEARCH() },
     { 0,                     GDK_KEY_m,      spawn,      BM_ADD("_SURF_URI") },
