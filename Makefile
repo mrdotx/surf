@@ -19,22 +19,22 @@ options:
 	@echo "WEBEXTCFLAGS  = $(WEBEXTCFLAGS) $(CFLAGS)"
 	@echo "LDFLAGS       = $(LDFLAGS)"
 
-.c.o:
-	$(CC) $(SURFCFLAGS) $(CFLAGS) -c $<
+surf: $(OBJ)
+	$(CC) $(SURFLDFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
-.o.so:
-	$(CC) -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $< $(WEBEXTLIBS)
+$(OBJ) $(WOBJ): config.h common.h config.mk
 
 config.h:
 	cp config.def.h $@
 
-$(OBJ) $(WOBJ): config.h common.h config.mk
+$(OBJ): $(SRC)
+	$(CC) $(SURFCFLAGS) $(CFLAGS) -c $(SRC)
 
-surf: $(OBJ)
-	$(CC) $(SURFLDFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
+$(WLIB): $(WOBJ)
+	$(CC) -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $? $(WEBEXTLIBS)
 
-$(WOBJ):
-	$(CC) $(WEBEXTCFLAGS) $(CFLAGS) -c $(@:.o=.c)
+$(WOBJ): $(WSRC)
+	$(CC) $(WEBEXTCFLAGS) $(CFLAGS) -c $(WSRC)
 
 clean:
 	rm -f surf $(OBJ)
@@ -73,5 +73,4 @@ uninstall:
 	done
 	- rmdir $(DESTDIR)$(LIBDIR)
 
-.SUFFIXES: .so .o .c
 .PHONY: all options distclean clean dist install uninstall

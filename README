@@ -54,4 +54,4 @@ surf-websearch-20190510-d068a38.diff
 
 Last implemented commit
 -----------------------
-2020-05-02 13:50	Simplify communication with webext	Quentin Rameau
+2020-11-07 17:43	Makefile: use explicit targets	Quentin Rameau
