@@ -1,5 +1,5 @@
 /* modifier 0 means no modifier */
-static int surfuseragent    = 0;  /* Append Surf version to default WebKit user agent */
+static int surfuseragent    = 1;  /* Append Surf version to default WebKit user agent */
 static char *fulluseragent  = ""; /* Or override the whole user agent string */
 static char *scriptfile     = "~/.config/surf/script.js";
 static char *styledir       = "~/.config/surf/styles/";
@@ -77,7 +77,8 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 #define SETPROP(r, s, p) { \
         .v = (const char *[]){ "/bin/sh", "-c", \
             "prop=\"$(printf '%b' \"$(xprop -id $1 $2 " \
-            "| sed \"s/^$2(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\" && cat ~/.config/surf/bookmarks)\" " \
+            "| sed \"s/^$2(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\" && " \
+            "cat ~/.config/surf/bookmarks)\" " \
             "| dmenu -b -l 10 -p \"$4\" -w $1)\" && " \
             "xprop -id $1 -f $3 8s -set $3 \"$prop\"", \
             "surf-setprop", winid, r, s, p, NULL \
@@ -94,10 +95,10 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 
 /* DOWNLOAD(URI, referer) */
 #define DOWNLOAD(u, r) { \
-        .v = (char *[]){ "/bin/sh", "-c", \
-            "st -e /bin/sh -c \"aria2c -U '$1'" \
-            "--referer '$2' --load-cookies $3 --save-cookies $3 '$0';" \
-            "sleep 3;\"", u, useragent, r, cookiefile, NULL \
+        .v = (const char *[]){ "st", "-e", "/bin/sh", "-c", \
+            "aria2c --load-cookies \"$0\" --save-cookies \"$0\" " \
+            "--referer \"$1\" --user-agent \"$2\" \"$3\"; sleep 3", \
+            cookiefile, r, useragent, u, NULL \
         } \
 }
 
