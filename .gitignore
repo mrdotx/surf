@@ -1,7 +1,7 @@
-# path:       /home/klassiker/.local/share/repos/surf/.gitignore
-# author:     klassiker [mrdotx]
-# github:     https://github.com/mrdotx/surf
-# date:       2020-11-13T14:40:10+0100
+# path:   /home/klassiker/.local/share/repos/surf/.gitignore
+# author: klassiker [mrdotx]
+# github: https://github.com/mrdotx/surf
+# date:   2021-01-15T14:03:08+0100
 
 /config.h
 /surf
