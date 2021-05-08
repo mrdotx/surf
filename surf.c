@@ -51,7 +51,6 @@ enum {
 };
 
 typedef enum {
-	AcceleratedCanvas,
 	AccessMicrophone,
 	AccessWebcam,
 	CaretBrowsing,
@@ -72,7 +71,6 @@ typedef enum {
 	KioskMode,
 	LoadImages,
 	MediaManualPlay,
-	Plugins,
 	PreferredLanguages,
 	RunInFullscreen,
 	ScrollBars,
@@ -276,7 +274,6 @@ static ParamName loadtransient[] = {
 };
 
 static ParamName loadcommitted[] = {
-	AcceleratedCanvas,
 //	AccessMicrophone,
 //	AccessWebcam,
 	CaretBrowsing,
@@ -289,7 +286,6 @@ static ParamName loadcommitted[] = {
 	Java,
 //	KioskMode,
 	MediaManualPlay,
-	Plugins,
 	RunInFullscreen,
 	ScrollBars,
 	SiteQuirks,
@@ -689,7 +685,6 @@ gettogglestats(Client *c)
 	togglestats[3] = curconfig[DiskCache].val.i ?       'D' : 'd';
 	togglestats[4] = curconfig[LoadImages].val.i ?      'I' : 'i';
 	togglestats[5] = curconfig[JavaScript].val.i ?      'S' : 's';
-	togglestats[6] = curconfig[Plugins].val.i ?         'V' : 'v';
 	togglestats[7] = curconfig[Style].val.i ?           'M' : 'm';
 	togglestats[8] = curconfig[FrameFlattening].val.i ? 'F' : 'f';
 	togglestats[9] = curconfig[Certificate].val.i ?     'X' : 'x';
@@ -774,9 +769,6 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 	modparams[p] = curconfig[p].prio;
 
 	switch (p) {
-	case AcceleratedCanvas:
-		webkit_settings_set_enable_accelerated_2d_canvas(s, a->i);
-		break;
 	case AccessMicrophone:
 		return; /* do nothing */
 	case AccessWebcam:
@@ -841,9 +833,6 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 		break;
 	case MediaManualPlay:
 		webkit_settings_set_media_playback_requires_user_gesture(s, a->i);
-		break;
-	case Plugins:
-		webkit_settings_set_enable_plugins(s, a->i);
 		break;
 	case PreferredLanguages:
 		return; /* do nothing */
@@ -1047,7 +1036,6 @@ newwindow(Client *c, const Arg *a, int noembed)
 	cmd[i++] = curconfig[KioskMode].val.i ?       "-K" : "-k" ;
 	cmd[i++] = curconfig[Style].val.i ?           "-M" : "-m" ;
 	cmd[i++] = curconfig[Inspector].val.i ?       "-N" : "-n" ;
-	cmd[i++] = curconfig[Plugins].val.i ?         "-P" : "-p" ;
 	if (scriptfile && g_strcmp0(scriptfile, "")) {
 		cmd[i++] = "-r";
 		cmd[i++] = scriptfile;
@@ -1147,8 +1135,6 @@ newview(Client *c, WebKitWebView *rv)
 		   "enable-html5-local-storage", curconfig[DiskCache].val.i,
 		   "enable-java", curconfig[Java].val.i,
 		   "enable-javascript", curconfig[JavaScript].val.i,
-		   "enable-plugins", curconfig[Plugins].val.i,
-		   "enable-accelerated-2d-canvas", curconfig[AcceleratedCanvas].val.i,
 		   "enable-site-specific-quirks", curconfig[SiteQuirks].val.i,
 		   "enable-smooth-scrolling", curconfig[SmoothScrolling].val.i,
 		   "enable-webgl", curconfig[WebGL].val.i,
@@ -1192,10 +1178,6 @@ newview(Client *c, WebKitWebView *rv)
 		webkit_web_context_set_cache_model(context,
 		    curconfig[DiskCache].val.i ? WEBKIT_CACHE_MODEL_WEB_BROWSER :
 		    WEBKIT_CACHE_MODEL_DOCUMENT_VIEWER);
-		/* plugins directories */
-		for (; *plugindirs; ++plugindirs)
-			webkit_web_context_set_additional_plugins_directory(
-			    context, *plugindirs);
 
 		/* Currently only works with text file to be compatible with curl */
 		if (!curconfig[Ephemeral].val.i)
@@ -2119,14 +2101,6 @@ main(int argc, char *argv[])
 	case 'N':
 		defconfig[Inspector].val.i = 1;
 		defconfig[Inspector].prio = 2;
-		break;
-	case 'p':
-		defconfig[Plugins].val.i = 0;
-		defconfig[Plugins].prio = 2;
-		break;
-	case 'P':
-		defconfig[Plugins].val.i = 1;
-		defconfig[Plugins].prio = 2;
 		break;
 	case 'r':
 		scriptfile = EARGF(usage());

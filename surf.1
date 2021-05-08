@@ -91,12 +91,6 @@ Disable the Web Inspector (Developer Tools).
 .B \-N
 Enable the Web Inspector (Developer Tools).
 .TP
-.B \-p
-Disable Plugins.
-.TP
-.B \-P
-Enable Plugins.
-.TP
 .B \-r scriptfile
 Specify the user
 .IR scriptfile .
@@ -231,10 +225,6 @@ Toggle script execution. This will reload the page.
 .B Ctrl\-Shift\-t
 Toggle strict TLS check. This will reload the page.
 .TP
-.B Ctrl\-Shift\-v
-Toggle the enabling of plugins on that surf instance. This will reload the
-page.
-.TP
 .B F11
 Toggle fullscreen mode.
 .SH INDICATORS OF OPERATION
@@ -264,9 +254,6 @@ images
 .TP
 .B s S
 scripts
-.TP
-.B v V
-plugins
 .TP
 .B m M
 styles
@@ -309,22 +296,10 @@ If this variable is set and not empty upon startup, surf will use it as the http
 .SH SIGNALS
 Surf will reload the current page on
 .BR SIGHUP .
-.SH PLUGINS
-For using plugins in surf, first determine your running architecture. Then get
-the appropriate plugin for that architecture and copy it to
-.BR /usr/lib/browser-plugins
-or
-.BR /usr/lib64/browser-plugins.
-Surf should load them automatically.
-.BR
-If you want to use a 32bit plugin on a 64bit system,
-.BR nspluginwrapper(1)
-will help you.
 .SH SEE ALSO
 .BR dmenu(1),
 .BR xprop(1),
 .BR tabbed(1),
-.BR nspluginwrapper(1),
 .BR xdotool(1)
 .SH BUGS
 Please report them!

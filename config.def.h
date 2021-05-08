@@ -7,11 +7,6 @@ static char *certdir        = "~/.config/surf/certificates/";
 static char *cachedir       = "/tmp/surf/cache/";
 static char *cookiefile     = "~/.cache/surf/cookies.txt";
 static char *searchurl      = "duckduckgo.com/?q=%s";
-static char **plugindirs    = (char*[]){
-    "~/.surf/plugins/",
-    LIBPREFIX "/mozilla/plugins/",
-    NULL
-};
 
 /* Webkit default features */
 /* Highest priority value will be used.
@@ -21,7 +16,6 @@ static char **plugindirs    = (char*[]){
  */
 static Parameter defconfig[ParameterLast] = {
     /* parameter                    Arg value       priority */
-    [AcceleratedCanvas]   =       { { .i = 1 },     },
     [AccessMicrophone]    =       { { .i = 0 },     },
     [AccessWebcam]        =       { { .i = 0 },     },
     [Certificate]         =       { { .i = 1 },     },
@@ -42,7 +36,6 @@ static Parameter defconfig[ParameterLast] = {
     [KioskMode]           =       { { .i = 0 },     },
     [LoadImages]          =       { { .i = 1 },     },
     [MediaManualPlay]     =       { { .i = 1 },     },
-    [Plugins]             =       { { .i = 0 },     },
     [PreferredLanguages]  =       { { .v = (char *[]){ NULL } }, },
     [RunInFullscreen]     =       { { .i = 0 },     },
     [ScrollBars]          =       { { .i = 1 },     },
@@ -60,7 +53,6 @@ static Parameter defconfig[ParameterLast] = {
 static UriParameters uriparams[] = {
     { "(://|\\.)suckless\\.org(/|$)", {
       [JavaScript] = { { .i = 0 }, 1 },
-      [Plugins]    = { { .i = 0 }, 1 },
     }, },
 };
 
@@ -211,7 +203,6 @@ static Key keys[] = {
     { MODKEY|GDK_SHIFT_MASK, GDK_KEY_g,      toggle,     { .i = Geolocation } },
     { MODKEY|GDK_SHIFT_MASK, GDK_KEY_s,      toggle,     { .i = JavaScript } },
     { MODKEY|GDK_SHIFT_MASK, GDK_KEY_i,      toggle,     { .i = LoadImages } },
-    { MODKEY|GDK_SHIFT_MASK, GDK_KEY_v,      toggle,     { .i = Plugins } },
     { MODKEY|GDK_SHIFT_MASK, GDK_KEY_b,      toggle,     { .i = ScrollBars } },
     { MODKEY|GDK_SHIFT_MASK, GDK_KEY_t,      toggle,     { .i = StrictTLS } },
     { MODKEY|GDK_SHIFT_MASK, GDK_KEY_m,      toggle,     { .i = Style } },
