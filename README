@@ -54,4 +54,4 @@ surf-websearch-20190510-d068a38.diff
 
 Last implemented commit
 -----------------------
-2021-05-08 14:53	Bump version to 2.1	Quentin Rameau
+2021-05-20 22:16	Fix togglestats array	Quentin Rameau

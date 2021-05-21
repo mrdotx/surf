@@ -243,7 +243,7 @@ static void clicknewwindow(Client *c, const Arg *a, WebKitHitTestResult *h);
 static void clickexternplayer(Client *c, const Arg *a, WebKitHitTestResult *h);
 
 static char winid[64];
-static char togglestats[12];
+static char togglestats[11];
 static char pagestats[2];
 static Atom atoms[AtomLast];
 static Window embed;
@@ -685,11 +685,10 @@ gettogglestats(Client *c)
 	togglestats[3] = curconfig[DiskCache].val.i ?       'D' : 'd';
 	togglestats[4] = curconfig[LoadImages].val.i ?      'I' : 'i';
 	togglestats[5] = curconfig[JavaScript].val.i ?      'S' : 's';
-	togglestats[7] = curconfig[Style].val.i ?           'M' : 'm';
-	togglestats[8] = curconfig[FrameFlattening].val.i ? 'F' : 'f';
-	togglestats[9] = curconfig[Certificate].val.i ?     'X' : 'x';
-	togglestats[10] = curconfig[StrictTLS].val.i ?      'T' : 't';
-	togglestats[11] = '\0';
+	togglestats[6] = curconfig[Style].val.i ?           'M' : 'm';
+	togglestats[7] = curconfig[FrameFlattening].val.i ? 'F' : 'f';
+	togglestats[8] = curconfig[Certificate].val.i ?     'X' : 'x';
+	togglestats[9] = curconfig[StrictTLS].val.i ?       'T' : 't';
 }
 
 void
