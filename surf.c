@@ -37,7 +37,7 @@
 #define LENGTH(x)               (sizeof(x) / sizeof(x[0]))
 #define CLEANMASK(mask)         (mask & (MODKEY|GDK_SHIFT_MASK))
 
-enum { AtomFind, AtomSearch, AtomGo, AtomUri, AtomLast };
+enum { AtomFind, AtomSearch, AtomGo, AtomUri, AtomUTF8, AtomLast };
 
 enum {
 	OnDoc   = WEBKIT_HIT_TEST_RESULT_CONTEXT_DOCUMENT,
@@ -343,6 +343,7 @@ setup(void)
 	atoms[AtomSearch] = XInternAtom(dpy, "_SURF_SEARCH", False);
 	atoms[AtomGo] = XInternAtom(dpy, "_SURF_GO", False);
 	atoms[AtomUri] = XInternAtom(dpy, "_SURF_URI", False);
+	atoms[AtomUTF8] = XInternAtom(dpy, "UTF8_STRING", False);
 
 	gtk_init(NULL, NULL);
 
@@ -625,7 +626,7 @@ void
 setatom(Client *c, int a, const char *v)
 {
 	XChangeProperty(dpy, c->xid,
-	                atoms[a], XA_STRING, 8, PropModeReplace,
+	                atoms[a], atoms[AtomUTF8], 8, PropModeReplace,
 	                (unsigned char *)v, strlen(v) + 1);
 	XSync(dpy, False);
 }
@@ -640,7 +641,8 @@ getatom(Client *c, int a)
 	unsigned char *p = NULL;
 
 	XSync(dpy, False);
-	XGetWindowProperty(dpy, c->xid, atoms[a], 0L, BUFSIZ, False, XA_STRING,
+	XGetWindowProperty(dpy, c->xid,
+	                   atoms[a], 0L, BUFSIZ, False, atoms[AtomUTF8],
 	                   &adummy, &idummy, &ldummy, &ldummy, &p);
 	if (p)
 		strncpy(buf, (char *)p, LENGTH(buf) - 1);

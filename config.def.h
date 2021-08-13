@@ -68,12 +68,13 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 /* SETPROP(readprop, setprop, prompt)*/
 #define SETPROP(r, s, p) { \
         .v = (const char *[]){ "/bin/sh", "-c", \
-            "prop=\"$(printf '%b' \"$(xprop -id $1 $2 " \
-            "| sed \"s/^$2(STRING) = //;s/^\\\"\\(.*\\)\\\"$/\\1/\" && " \
-            "cat ~/.config/surf/bookmarks)\" " \
-            "| dmenu -b -l 10 -p \"$4\" -w $1)\" && " \
-            "xprop -id $1 -f $3 8s -set $3 \"$prop\"", \
-            "surf-setprop", winid, r, s, p, NULL \
+            "prop=\"$(printf '%b' \"$(xprop -id $1 "r" " \
+            "| sed -e 's/^"r"(UTF8_STRING) = \"\\(.*\\)\"/\\1/' " \
+            "      -e 's/\\\\\\(.\\)/\\1/g' " \
+            "&& cat ~/.config/surf/bookmarks)\" " \
+            "| dmenu -b -l 10 -p '"p"' -w $1)\" " \
+            "&& xprop -id $1 -f "s" 8u -set "s" \"$prop\"", \
+            "surf-setprop", winid, NULL \
         } \
 }
 
