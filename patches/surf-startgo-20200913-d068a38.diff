@@ -1,0 +1,78 @@
+From 950f05fca48ab3adf0ec955b06c8e7dad3ee2c32 Mon Sep 17 00:00:00 2001
+From: Luca Wellmeier <luca_wellmeier@gmx.de>
+Date: Sun, 13 Sep 2020 11:33:25 +0200
+Subject: [PATCH] add option to start the go prompt immediately after startup
+
+---
+ config.def.h | 3 +++
+ surf.1       | 5 ++++-
+ surf.c       | 9 +++++++++
+ 3 files changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/config.def.h b/config.def.h
+index 34265f6..3da943d 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -7,6 +7,9 @@ static char *certdir        = "~/.surf/certificates/";
+ static char *cachedir       = "~/.surf/cache/";
+ static char *cookiefile     = "~/.surf/cookies.txt";
+ 
++/* enable to open GO prompt on startup */
++static int startgo = 0;
++
+ /* Webkit default features */
+ /* Highest priority value will be used.
+  * Default parameters are priority 0
+diff --git a/surf.1 b/surf.1
+index 45c31bb..54f2dbd 100644
+--- a/surf.1
++++ b/surf.1
+@@ -3,7 +3,7 @@
+ surf \- simple webkit-based browser
+ .SH SYNOPSIS
+ .B surf
+-.RB [-bBdDfFgGiIkKmMnNpPsStTvwxX]
++.RB [-bBdDfFgGhiIkKmMnNpPsStTvwxX]
+ .RB [-a\ cookiepolicies]
+ .RB [-c\ cookiefile]
+ .RB [-C\ stylefile]
+@@ -67,6 +67,9 @@ Disable giving the geolocation to websites.
+ .B \-G
+ Enable giving the geolocation to websites.
+ .TP
++.B \-h
++Start the GO prompt immediately.
++.TP
+ .B \-i
+ Disable Images.
+ .TP
+diff --git a/surf.c b/surf.c
+index 2b54e3c..f5fae45 100644
+--- a/surf.c
++++ b/surf.c
+@@ -2026,6 +2026,9 @@ main(int argc, char *argv[])
+ 		defconfig[Geolocation].val.i = 1;
+ 		defconfig[Geolocation].prio = 2;
+ 		break;
++	case 'h':
++		startgo = 1;
++		break;
+ 	case 'i':
+ 		defconfig[LoadImages].val.i = 0;
+ 		defconfig[LoadImages].prio = 2;
+@@ -2120,6 +2123,12 @@ main(int argc, char *argv[])
+ 	loaduri(c, &arg);
+ 	updatetitle(c);
+ 
++	if (startgo) {
++		/* start directly into GO prompt */
++		Arg a = (Arg)SETPROP("_SURF_URI", "_SURF_GO", PROMPT_GO);
++		spawn(c, &a);
++	}
++
+ 	gtk_main();
+ 	cleanup();
+ 
+-- 
+2.28.0
+
