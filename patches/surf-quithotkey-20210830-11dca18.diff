@@ -1,0 +1,53 @@
+From bf390f44ba6de4aa6e30ab28a8ef51886e338d3e Mon Sep 17 00:00:00 2001
+From: z0gg3r <z0gg3r@users.no-reply.github.com>
+Date:   2021-08-31T08:22:28+0200
+Subject: [PATCH] Adds new function quit that calls cleanup() and exit(0) and
+ assings q as hotkey to quit in config.def.h
+
+---
+ config.def.h | 2 ++
+ surf.c       | 8 ++++++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/config.def.h b/config.def.h
+index 1355ba3..cf2fc68 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -136,6 +136,8 @@ static Key keys[] = {
+ 
+ 	{ 0,                     GDK_KEY_Escape, stop,       { 0 } },
+ 	{ MODKEY,                GDK_KEY_c,      stop,       { 0 } },
++
++	{ 0,			 GDK_KEY_q,	 quit,	     { 0 } },
+ 
+ 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_r,      reload,     { .i = 1 } },
+ 	{ MODKEY,                GDK_KEY_r,      reload,     { .i = 0 } },
+diff --git a/surf.c b/surf.c
+index 03d8242..c0ba8ed 100644
+--- a/surf.c
++++ b/surf.c
+@@ -228,6 +228,7 @@ static void scrollv(Client *c, const Arg *a);
+ static void scrollh(Client *c, const Arg *a);
+ static void navigate(Client *c, const Arg *a);
+ static void stop(Client *c, const Arg *a);
++static void quit(Client *c, const Arg *a);
+ static void toggle(Client *c, const Arg *a);
+ static void togglefullscreen(Client *c, const Arg *a);
+ static void togglecookiepolicy(Client *c, const Arg *a);
+@@ -1901,6 +1902,13 @@ stop(Client *c, const Arg *a)
+ 	webkit_web_view_stop_loading(c->view);
+ }
+ 
++void
++quit(Client *c, const Arg *a)
++{
++	cleanup();
++	exit(0);
++}
++
+ void
+ toggle(Client *c, const Arg *a)
+ {
+-- 
+2.33.0
+
