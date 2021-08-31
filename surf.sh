@@ -3,38 +3,41 @@
 # path:   /home/klassiker/.local/share/repos/surf/surf.sh
 # author: klassiker [mrdotx]
 # github: https://github.com/mrdotx/surf
-# date:   2021-01-15T14:03:54+0100
+# date:   2021-08-31T10:14:35+0200
 
-default="about:blank"
 xidfile="/tmp/surf/tabbed-surf.xid"
-
-mkdir -p "/tmp/surf"
 
 case "$#" in
     0)
-        options="$default"
+        uris="about:blank"
+        options="-h"
         ;;
     *)
-        options="$*"
+        uris="$*"
         ;;
 esac
 
-for uri in $options; do
+mkdir -p "/tmp/surf"
+
+for uri in $uris; do
+    run() {
+        surf -e "$xid" $options "$uri" >/dev/null 2>&1 &
+    }
+
     runtabbed() {
-        tabbed -cdn tabbed-surf -r 2 surf -e '' "$uri" >"$xidfile" 2>/dev/null &
+        tabbed -cdn tabbed-surf -r 2 \
+            surf -e "$xid" $options "$uri" >"$xidfile" 2>/dev/null &
         sleep .5
     }
 
-    if [ ! -r "$xidfile" ];
-    then
-        runtabbed
-    else
+    if [ -r "$xidfile" ]; then
         xid=$(cat "$xidfile")
-        if xprop -id "$xid" >/dev/null 2>&1;
-        then
-            surf -e "$xid" "$uri" >/dev/null 2>&1 &
+        if xprop -id "$xid" >/dev/null 2>&1; then
+            run
         else
             runtabbed
         fi
+    else
+        runtabbed
     fi
 done

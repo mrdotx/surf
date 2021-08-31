@@ -8,6 +8,9 @@ static char *cachedir       = "/tmp/surf/cache/";
 static char *cookiefile     = "~/.cache/surf/cookies.txt";
 static char *searchurl      = "duckduckgo.com/?q=%s";
 
+/* enable to open GO prompt on startup */
+static int startgo = 0;
+
 /* Webkit default features */
 /* Highest priority value will be used.
  * Default parameters are priority 0
