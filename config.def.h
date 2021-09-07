@@ -6,7 +6,6 @@ static char *styledir       = "~/.config/surf/styles/";
 static char *certdir        = "~/.config/surf/certificates/";
 static char *cachedir       = "/tmp/surf/cache/";
 static char *cookiefile     = "~/.cache/surf/cookies.txt";
-static char *searchurl      = "duckduckgo.com/?q=%s";
 
 /* enable to open GO prompt on startup */
 static int startgo = 0;
@@ -82,14 +81,6 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
         } \
 }
 
-#define SEARCH() { \
-        .v = (const char *[]){ "/bin/sh", "-c", \
-            "xprop -id $1 -f $2 8s -set $2 \"" \
-            "$(dmenu -b -p Search: -w $1 < /dev/null)\"", \
-            "surf-search", winid, "_SURF_SEARCH", NULL \
-        } \
-}
-
 /* DOWNLOAD(URI, referer) */
 #define DOWNLOAD(u, r) { \
         .v = (const char *[]){ "st", "-e", "/bin/sh", "-c", \
@@ -148,6 +139,13 @@ static SiteSpecific certs[] = {
     { "://prometheus/", "prometheus.crt" },
 };
 
+/* search engines */
+static SearchEngine searchengines[] = {
+       { "s", "https://searx.tiekoetter.com/search?q=%s" },
+       { "d", "https://duckduckgo.com/?q=%s"             },
+       { "g", "https://www.google.com/search?q=%s"       },
+};
+
 #define MODKEY GDK_CONTROL_MASK
 
 /* hotkeys */
@@ -160,7 +158,6 @@ static Key keys[] = {
     { 0,                     GDK_KEY_g,      spawn,      SETPROP("_SURF_URI", "_SURF_GO", PROMPT_GO) },
     { 0,                     GDK_KEY_f,      spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
     { 0,                     GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
-    { 0,                     GDK_KEY_s,      spawn,      SEARCH() },
     { 0,                     GDK_KEY_m,      spawn,      BM_ADD("_SURF_URI") },
 
     { 0,                     GDK_KEY_i,      insert,     { .i = 1 } },
