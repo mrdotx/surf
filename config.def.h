@@ -66,23 +66,11 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
                                     WEBKIT_FIND_OPTIONS_WRAP_AROUND;
 
 #define PROMPT_GO   "Go:"
+#define PROMPT_BM   "Bookmark:"
 #define PROMPT_FIND "Find:"
 
 /* SETPROP(readprop, setprop, prompt)*/
 #define SETPROP(r, s, p) { \
-        .v = (const char *[]){ "/bin/sh", "-c", \
-            "prop=\"$(printf '%b' \"$(xprop -id $1 "r" " \
-            "| sed -e 's/^"r"(UTF8_STRING) = \"\\(.*\\)\"/\\1/' " \
-            "      -e 's/\\\\\\(.\\)/\\1/g' " \
-            "&& cat ~/.config/surf/bookmarks)\" " \
-            "| dmenu -b -l 10 -p '"p"' -w $1)\" " \
-            "&& xprop -id $1 -f "s" 8u -set "s" \"$prop\"", \
-            "surf-setprop", winid, NULL \
-        } \
-}
-
-/* SETFIND(readprop, setprop, prompt)*/
-#define SETFIND(r, s, p) { \
         .v = (const char *[]){ "/bin/sh", "-c", \
             "prop=\"$(printf '%b' \"$(xprop -id $1 "r" " \
             "| sed -e 's/^"r"(UTF8_STRING) = \"\\(.*\\)\"/\\1/' " \
@@ -124,11 +112,25 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
         } \
 }
 
+/* BM_SET(readprop, setprop, prompt)*/
+#define BM_SET(r, s, p) { \
+        .v = (const char *[]){ "/bin/sh", "-c", \
+            "prop=\"$(printf '%b' \"$(xprop -id $1 "r" " \
+            "| sed -e 's/^"r"(UTF8_STRING) = \"\\(.*\\)\"/\\1/' " \
+            "      -e 's/\\\\\\(.\\)/\\1/g' " \
+            "&& cat ~/.config/surf/bookmarks)\" " \
+            "| dmenu -b -l 10 -p '"p"' -w $1)\" " \
+            "&& xprop -id $1 -f "s" 8u -set "s" \"$prop\"", \
+            "surf-setprop", winid, NULL \
+        } \
+}
+
 /* BM_ADD(readprop) */
 #define BM_ADD(r) {\
         .v = (const char *[]){ "/bin/sh", "-c", \
             "(echo $(xprop -id $0 $1) | cut -d '\"' -f2 " \
-            "| sed 's/.*https*:\\/\\/\\(www\\.\\)\\?//' && cat ~/.config/surf/bookmarks) " \
+            "| sed 's/.*https*:\\/\\/\\(www\\.\\)\\?//' " \
+            "&& cat ~/.config/surf/bookmarks) " \
             "| awk '!seen[$0]++' > ~/.config/surf/bookmarks.tmp && " \
             "mv ~/.config/surf/bookmarks.tmp ~/.config/surf/bookmarks", \
             winid, r, NULL \
@@ -173,8 +175,9 @@ static SearchEngine searchengines[] = {
 static Key keys[] = {
     /* modifier              keyval          function    arg */
     { 0,                     GDK_KEY_g,      spawn,      SETPROP("_SURF_URI", "_SURF_GO", PROMPT_GO) },
-    { 0,                     GDK_KEY_f,      spawn,      SETFIND("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
-    { 0,                     GDK_KEY_slash,  spawn,      SETFIND("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
+    { 0,                     GDK_KEY_f,      spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
+    { 0,                     GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
+    { 0,                     GDK_KEY_b,      spawn,      BM_SET("_SURF_URI", "_SURF_GO", PROMPT_BM) },
     { 0,                     GDK_KEY_m,      spawn,      BM_ADD("_SURF_URI") },
 
     { 0,                     GDK_KEY_i,      insert,     { .i = 1 } },
@@ -194,7 +197,7 @@ static Key keys[] = {
     { 0,                     GDK_KEY_j,      scrollv,    { .i = +10 } },
     { 0,                     GDK_KEY_k,      scrollv,    { .i = -10 } },
     { 0,                     GDK_KEY_space,  scrollv,    { .i = +50 } },
-    { 0,                     GDK_KEY_b,      scrollv,    { .i = -50 } },
+    { 0,                     GDK_KEY_o,      scrollv,    { .i = -50 } },
     { 0,                     GDK_KEY_i,      scrollh,    { .i = +10 } },
     { 0,                     GDK_KEY_u,      scrollh,    { .i = -10 } },
 
