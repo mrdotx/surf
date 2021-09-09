@@ -83,13 +83,15 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 
 /* DOWNLOAD(URI, referer) */
 /* urxvtc.sh can be replaced by another terminal emulator
- * terminal_wrapper.sh can be removed if needed
  */
+
 #define DOWNLOAD(u, r) { \
         .v = (const char *[]){ "urxvtc.sh", "-e", "/bin/sh", "-c", \
-            "terminal_wrapper.sh aria2c " \
-            "--load-cookies \"$0\" --save-cookies \"$0\" " \
-            "--referer \"$1\" --user-agent \"$2\" \"$3\"", \
+            "aria2c --load-cookies \"$0\" --save-cookies \"$0\" " \
+            "--referer \"$1\" --user-agent \"$2\" \"$3\"; " \
+            "printf \"%s\" \"The command exited with status $?. \" && " \
+            "printf \"%s\" \"Press ENTER to continue.\"; " \
+            "read -r \"select\"", \
             cookiefile, r, useragent, u, NULL \
         } \
 }
