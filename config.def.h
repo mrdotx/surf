@@ -82,9 +82,8 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 }
 
 /* DOWNLOAD(URI, referer) */
-/* urxvtc.sh can be replaced by another terminal emulator
+/* urxvtc.sh can be replaced by another terminal emulator like st
  */
-
 #define DOWNLOAD(u, r) { \
         .v = (const char *[]){ "urxvtc.sh", "-e", "/bin/sh", "-c", \
             "aria2c --load-cookies \"$0\" --save-cookies \"$0\" " \
