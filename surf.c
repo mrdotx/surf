@@ -56,6 +56,7 @@ typedef enum {
 	CaretBrowsing,
 	Certificate,
 	CookiePolicies,
+	DarkMode,
 	DiskCache,
 	DefaultCharset,
 	DNSPrefetch,
@@ -102,6 +103,8 @@ typedef struct Client {
 	GtkWidget *win;
 	WebKitWebView *view;
 	WebKitWebInspector *inspector;
+	WebKitSettings *settings;
+	WebKitWebContext *context;
 	WebKitFindController *finder;
 	WebKitHitTestResult *mousepos;
 	GTlsCertificate *cert, *failedcert;
@@ -284,6 +287,7 @@ static ParamName loadcommitted[] = {
 //	AccessMicrophone,
 //	AccessWebcam,
 	CaretBrowsing,
+	DarkMode,
 	DefaultCharset,
 	FontSize,
 	FrameFlattening,
@@ -759,7 +763,6 @@ void
 setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 {
 	GdkRGBA bgcolor = { 0 };
-	WebKitSettings *s = webkit_web_view_get_settings(c->view);
 
 	modparams[p] = curconfig[p].prio;
 
@@ -769,7 +772,7 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 	case AccessWebcam:
 		return; /* do nothing */
 	case CaretBrowsing:
-		webkit_settings_set_enable_caret_browsing(s, a->i);
+		webkit_settings_set_enable_caret_browsing(c->settings, a->i);
 		refresh = 0;
 		break;
 	case Certificate:
@@ -778,32 +781,36 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 		return; /* do not update */
 	case CookiePolicies:
 		webkit_cookie_manager_set_accept_policy(
-		    webkit_web_context_get_cookie_manager(
-		    webkit_web_view_get_context(c->view)),
+		    webkit_web_context_get_cookie_manager(c->context),
 		    cookiepolicy_get());
 		refresh = 0;
 		break;
+	case DarkMode:
+		g_object_set(gtk_settings_get_default(),
+		             "gtk-application-prefer-dark-theme", a->i, NULL);
+		break;
 	case DiskCache:
-		webkit_web_context_set_cache_model(
-		    webkit_web_view_get_context(c->view), a->i ?
+		webkit_web_context_set_cache_model(c->context, a->i ?
 		    WEBKIT_CACHE_MODEL_WEB_BROWSER :
 		    WEBKIT_CACHE_MODEL_DOCUMENT_VIEWER);
 		return; /* do not update */
 	case DefaultCharset:
-		webkit_settings_set_default_charset(s, a->v);
+		webkit_settings_set_default_charset(c->settings, a->v);
 		return; /* do not update */
 	case DNSPrefetch:
-		webkit_settings_set_enable_dns_prefetching(s, a->i);
+		webkit_settings_set_enable_dns_prefetching(c->settings, a->i);
 		return; /* do not update */
 	case FileURLsCrossAccess:
-		webkit_settings_set_allow_file_access_from_file_urls(s, a->i);
-		webkit_settings_set_allow_universal_access_from_file_urls(s, a->i);
+		webkit_settings_set_allow_file_access_from_file_urls(
+		    c->settings, a->i);
+		webkit_settings_set_allow_universal_access_from_file_urls(
+		    c->settings, a->i);
 		return; /* do not update */
 	case FontSize:
-		webkit_settings_set_default_font_size(s, a->i);
+		webkit_settings_set_default_font_size(c->settings, a->i);
 		return; /* do not update */
 	case FrameFlattening:
-		webkit_settings_set_enable_frame_flattening(s, a->i);
+		webkit_settings_set_enable_frame_flattening(c->settings, a->i);
 		break;
 	case Geolocation:
 		refresh = 0;
@@ -813,21 +820,22 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 			webkit_web_view_set_background_color(c->view, &bgcolor);
 		return; /* do not update */
 	case Inspector:
-		webkit_settings_set_enable_developer_extras(s, a->i);
+		webkit_settings_set_enable_developer_extras(c->settings, a->i);
 		return; /* do not update */
 	case Java:
-		webkit_settings_set_enable_java(s, a->i);
+		webkit_settings_set_enable_java(c->settings, a->i);
 		return; /* do not update */
 	case JavaScript:
-		webkit_settings_set_enable_javascript(s, a->i);
+		webkit_settings_set_enable_javascript(c->settings, a->i);
 		break;
 	case KioskMode:
 		return; /* do nothing */
 	case LoadImages:
-		webkit_settings_set_auto_load_images(s, a->i);
+		webkit_settings_set_auto_load_images(c->settings, a->i);
 		break;
 	case MediaManualPlay:
-		webkit_settings_set_media_playback_requires_user_gesture(s, a->i);
+		webkit_settings_set_media_playback_requires_user_gesture(
+		    c->settings, a->i);
 		break;
 	case PreferredLanguages:
 		return; /* do nothing */
@@ -844,20 +852,20 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 	case ShowIndicators:
 		break;
 	case SmoothScrolling:
-		webkit_settings_set_enable_smooth_scrolling(s, a->i);
+		webkit_settings_set_enable_smooth_scrolling(c->settings, a->i);
 		return; /* do not update */
 	case SiteQuirks:
-		webkit_settings_set_enable_site_specific_quirks(s, a->i);
+		webkit_settings_set_enable_site_specific_quirks(
+		    c->settings, a->i);
 		break;
 	case SpellChecking:
 		webkit_web_context_set_spell_checking_enabled(
-		    webkit_web_view_get_context(c->view), a->i);
+		    c->context, a->i);
 		return; /* do not update */
 	case SpellLanguages:
 		return; /* do nothing */
 	case StrictTLS:
-		webkit_web_context_set_tls_errors_policy(
-		    webkit_web_view_get_context(c->view), a->i ?
+		webkit_web_context_set_tls_errors_policy(c->context, a->i ?
 		    WEBKIT_TLS_ERRORS_POLICY_FAIL :
 		    WEBKIT_TLS_ERRORS_POLICY_IGNORE);
 		break;
@@ -869,7 +877,7 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 		refresh = 0;
 		break;
 	case WebGL:
-		webkit_settings_set_enable_webgl(s, a->i);
+		webkit_settings_set_enable_webgl(c->settings, a->i);
 		break;
 	case ZoomLevel:
 		webkit_web_view_set_zoom_level(c->view, a->f);
@@ -915,8 +923,8 @@ setcert(Client *c, const char *uri)
 	if ((uri = strstr(uri, "https://"))) {
 		uri += sizeof("https://") - 1;
 		host = g_strndup(uri, strchr(uri, '/') - uri);
-		webkit_web_context_allow_tls_certificate_for_host(
-		    webkit_web_view_get_context(c->view), cert, host);
+		webkit_web_context_allow_tls_certificate_for_host(c->context,
+		    cert, host);
 		g_free(host);
 	}
 
@@ -1115,6 +1123,8 @@ newview(Client *c, WebKitWebView *rv)
 	/* Webview */
 	if (rv) {
 		v = WEBKIT_WEB_VIEW(webkit_web_view_new_with_related_view(rv));
+		context = webkit_web_view_get_context(v);
+		settings = webkit_web_view_get_settings(v);
 	} else {
 		settings = webkit_settings_new_with_settings(
 		   "allow-file-access-from-file-urls", curconfig[FileURLsCrossAccess].val.i,
@@ -1227,6 +1237,11 @@ newview(Client *c, WebKitWebView *rv)
 			 G_CALLBACK(showview), c);
 	g_signal_connect(G_OBJECT(v), "web-process-terminated",
 			 G_CALLBACK(webprocessterminated), c);
+
+	c->context = context;
+	c->settings = settings;
+
+	setparameter(c, 0, DarkMode, &curconfig[DarkMode].val);
 
 	return v;
 }
