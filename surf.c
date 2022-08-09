@@ -788,7 +788,7 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 	case DarkMode:
 		g_object_set(gtk_settings_get_default(),
 		             "gtk-application-prefer-dark-theme", a->i, NULL);
-		break;
+		return; /* do not update */
 	case DiskCache:
 		webkit_web_context_set_cache_model(c->context, a->i ?
 		    WEBKIT_CACHE_MODEL_WEB_BROWSER :
