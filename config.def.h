@@ -161,9 +161,9 @@ static SiteSpecific certs[] = {
 
 /* search engines */
 static SearchEngine searchengines[] = {
-       { "s", "https://searx.tiekoetter.com/search?q=%s" },
-       { "d", "https://duckduckgo.com/?q=%s"             },
-       { "g", "https://www.google.com/search?q=%s"       },
+       { "e", "https://www.ecosia.org/search?q=%s" },
+       { "d", "https://duckduckgo.com/?q=%s"       },
+       { "g", "https://www.google.com/search?q=%s" },
 };
 
 #define MODKEY GDK_CONTROL_MASK
