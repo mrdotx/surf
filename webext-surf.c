@@ -87,15 +87,29 @@ readsock(GIOChannel *s, GIOCondition c, gpointer unused)
 	return TRUE;
 }
 
-G_MODULE_EXPORT void
-webkit_web_extension_initialize_with_user_data(WebKitWebExtension *e,
-                                               const GVariant *gv)
+static void
+pageusermessagereply(GObject *o, GAsyncResult *r, gpointer page)
 {
+	WebKitUserMessage *m;
+	GUnixFDList *gfd;
 	GIOChannel *gchansock;
+	const char *name;
+	int nfd;
 
-	webext = e;
+	m = webkit_web_page_send_message_to_view_finish(page, r, NULL);
+	name = webkit_user_message_get_name(m);
+	if (strcmp(name, "surf-pipe") != 0) {
+		fprintf(stderr, "webext-surf: Unknown User Reply: %s\n", name);
+		return;
+	}
 
-	g_variant_get(gv, "i", &sock);
+	gfd = webkit_user_message_get_fd_list(m);
+	if ((nfd = g_unix_fd_list_get_length(gfd)) != 1) {
+		fprintf(stderr, "webext-surf: Too many file-descriptors: %d\n", nfd);
+		return;
+	}
+
+	sock = g_unix_fd_list_get(gfd, 0, NULL);
 
 	gchansock = g_io_channel_unix_new(sock);
 	g_io_channel_set_encoding(gchansock, NULL, NULL);
@@ -103,4 +117,22 @@ webkit_web_extension_initialize_with_user_data(WebKitWebExtension *e,
 	                       | G_IO_FLAG_NONBLOCK, NULL);
 	g_io_channel_set_close_on_unref(gchansock, TRUE);
 	g_io_add_watch(gchansock, G_IO_IN, readsock, NULL);
+}
+
+void
+pagecreated(WebKitWebExtension *e, WebKitWebPage *p, gpointer unused)
+{
+	WebKitUserMessage *msg;
+
+	msg = webkit_user_message_new("page-created", NULL);
+	webkit_web_page_send_message_to_view(p, msg, NULL, pageusermessagereply, p);
+}
+
+G_MODULE_EXPORT void
+webkit_web_extension_initialize(WebKitWebExtension *e)
+{
+	webext = e;
+
+	g_signal_connect(G_OBJECT(e), "page-created",
+	                 G_CALLBACK(pagecreated), NULL);
 }

@@ -57,4 +57,4 @@ surf-git-20170323-webkit2-searchengines.diff
 
 Last implemented commit
 -----------------------
-2022-05-04 01:30	Do not reload page when toggling dark mode	Quentin Rameau
+2022-10-16 15:39	webext: Exchange fd over webkit messages	Quentin Rameau

@@ -221,6 +221,8 @@ static void downloadstarted(WebKitWebContext *wc, WebKitDownload *d,
                             Client *c);
 static void responsereceived(WebKitDownload *d, GParamSpec *ps, Client *c);
 static void download(Client *c, WebKitURIResponse *r);
+static gboolean viewusrmsgrcv(WebKitWebView *v, WebKitUserMessage *m,
+                              gpointer u);
 static void webprocessterminated(WebKitWebView *v,
                                  WebKitWebProcessTerminationReason r,
                                  Client *c);
@@ -1235,6 +1237,8 @@ newview(Client *c, WebKitWebView *rv)
 			 G_CALLBACK(permissionrequested), c);
 	g_signal_connect(G_OBJECT(v), "ready-to-show",
 			 G_CALLBACK(showview), c);
+	g_signal_connect(G_OBJECT(v), "user-message-received",
+			 G_CALLBACK(viewusrmsgrcv), c);
 	g_signal_connect(G_OBJECT(v), "web-process-terminated",
 			 G_CALLBACK(webprocessterminated), c);
 
@@ -1273,14 +1277,6 @@ readsock(GIOChannel *s, GIOCondition ioc, gpointer unused)
 void
 initwebextensions(WebKitWebContext *wc, Client *c)
 {
-	GVariant *gv;
-
-	if (spair[1] < 0)
-		return;
-
-	gv = g_variant_new("i", spair[1]);
-
-	webkit_web_context_set_web_extensions_initialization_user_data(wc, gv);
 	webkit_web_context_set_web_extensions_directory(wc, WEBEXTDIR);
 }
 
@@ -1585,6 +1581,30 @@ titlechanged(WebKitWebView *view, GParamSpec *ps, Client *c)
 {
 	c->title = webkit_web_view_get_title(c->view);
 	updatetitle(c);
+}
+
+gboolean
+viewusrmsgrcv(WebKitWebView *v, WebKitUserMessage *m, gpointer unused)
+{
+	WebKitUserMessage *r;
+	GUnixFDList *gfd;
+	const char *name;
+
+	name = webkit_user_message_get_name(m);
+	if (strcmp(name, "page-created") != 0) {
+		fprintf(stderr, "surf: Unknown UserMessage: %s\n", name);
+		return TRUE;
+	}
+
+	if (spair[1] < 0)
+		return TRUE;
+
+	gfd = g_unix_fd_list_new_from_array(&spair[1], 1);
+	r = webkit_user_message_new_with_fd_list("surf-pipe", NULL, gfd);
+
+	webkit_user_message_send_reply(m, r);
+
+	return TRUE;
 }
 
 void
