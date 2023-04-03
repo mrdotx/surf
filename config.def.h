@@ -5,7 +5,7 @@ static char *scriptfile     = "~/.config/surf/script.js";
 static char *styledir       = "~/.config/surf/styles/";
 static char *certdir        = "~/.config/surf/certificates/";
 static char *cachedir       = "/tmp/surf/cache/";
-static char *cookiefile     = "~/.cache/surf/cookies.txt";
+static char *cookiefile     = "~/.local/state/surf/cookies.txt";
 
 /* enable to open GO prompt on startup */
 static int startgo = 0;
