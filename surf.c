@@ -21,6 +21,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdkx.h>
+#include <gio/gunixfdlist.h>
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include <gtk/gtkx.h>
@@ -332,7 +333,7 @@ die(const char *errstr, ...)
 void
 usage(void)
 {
-	die("usage: surf [-bBdDfFgGiIkKmMnNpPsStTvwxX]\n"
+	die("usage: surf [-bBdDfFgGiIkKmMnNsStTvwxX]\n"
 	    "[-a cookiepolicies ] [-c cookiefile] [-C stylefile] [-e xid]\n"
 	    "[-r scriptfile] [-u useragent] [-z zoomlevel] [uri]\n");
 }

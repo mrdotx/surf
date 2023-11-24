@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include <gio/gio.h>
+#include <gio/gunixfdlist.h>
 #include <webkit2/webkit-web-extension.h>
 #include <webkitdom/webkitdom.h>
 #include <webkitdom/WebKitDOMDOMWindowUnstable.h>
