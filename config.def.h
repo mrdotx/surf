@@ -155,8 +155,7 @@ static SiteSpecific styles[] = {
 static SiteSpecific certs[] = {
     /* regexp               file in $certdir */
     /*{ "://suckless\\.org/", "suckless.org.crt" }, */
-    { "://pi/", "pi.crt" },
-    { "://pi2/", "pi2.crt" },
+    { "://m625q/", "fritz.box.crt" },
 };
 
 /* search engines */
