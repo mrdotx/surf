@@ -3,41 +3,29 @@
 # path:   /home/klassiker/.local/share/repos/surf/surf.sh
 # author: klassiker [mrdotx]
 # github: https://github.com/mrdotx/surf
-# date:   2021-08-31T10:14:35+0200
+# date:   2024-05-04T13:02:47+0200
 
 xidfile="/tmp/surf/tabbed-surf.xid"
-
-case "$#" in
-    0)
-        uris="about:blank"
-        options="-h"
-        ;;
-    *)
-        uris="$*"
-        ;;
-esac
-
 mkdir -p "/tmp/surf"
 
-for uri in $uris; do
-    run() {
-        surf -e "$xid" $options "$uri" >/dev/null 2>&1 &
-    }
+[ "$#" -eq 0 ] && options="-h"
 
-    runtabbed() {
-        tabbed -cdn tabbed-surf -r 2 \
-            surf -e "$xid" $options "$uri" >"$xidfile" 2>/dev/null &
-        sleep .5
-    }
-
-    if [ -r "$xidfile" ]; then
-        xid=$(cat "$xidfile")
-        if xprop -id "$xid" >/dev/null 2>&1; then
-            run
-        else
-            runtabbed
-        fi
-    else
-        runtabbed
-    fi
+for uri in "${@:-"about:blank"}"; do
+    xid=$(cat "$xidfile" 2>/dev/null)
+    # shellcheck disable=SC2086
+    case $? in
+        0)
+            if xprop -id "$xid" >/dev/null 2>&1; then
+                surf -e "$xid" $options "$uri" >/dev/null 2>&1 &
+            else
+                tabbed -cdn tabbed-surf -r 2 \
+                    surf -e "$xid" $options "$uri" >/dev/null 2>&1 &
+            fi
+            ;;
+        *)
+            tabbed -cdn tabbed-surf -r 2 \
+                surf -e "$xid" $options "$uri" >"$xidfile" 2>/dev/null &
+            ;;
+    esac
+    sleep 1
 done
