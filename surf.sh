@@ -3,7 +3,7 @@
 # path:   /home/klassiker/.local/share/repos/surf/surf.sh
 # author: klassiker [mrdotx]
 # github: https://github.com/mrdotx/surf
-# date:   2024-05-04T13:02:47+0200
+# date:   2024-05-24T23:37:11+0200
 
 xidfile="/tmp/surf/tabbed-surf.xid"
 mkdir -p "/tmp/surf"
@@ -12,7 +12,6 @@ mkdir -p "/tmp/surf"
 
 for uri in "${@:-"about:blank"}"; do
     xid=$(cat "$xidfile" 2>/dev/null)
-    # shellcheck disable=SC2086
     case $? in
         0)
             if xprop -id "$xid" >/dev/null 2>&1; then
