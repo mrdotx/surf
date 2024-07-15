@@ -64,11 +64,9 @@ typedef enum {
 	Ephemeral,
 	FileURLsCrossAccess,
 	FontSize,
-	FrameFlattening,
 	Geolocation,
 	HideBackground,
 	Inspector,
-	Java,
 	JavaScript,
 	KioskMode,
 	LoadImages,
@@ -198,7 +196,6 @@ static gboolean buttonreleased(GtkWidget *w, GdkEvent *e, Client *c);
 static GdkFilterReturn processx(GdkXEvent *xevent, GdkEvent *event,
                                 gpointer d);
 static gboolean winevent(GtkWidget *w, GdkEvent *e, Client *c);
-static gboolean readsock(GIOChannel *s, GIOCondition ioc, gpointer unused);
 static void showview(WebKitWebView *v, Client *c);
 static GtkWidget *createwindow(Client *c);
 static gboolean loadfailedtls(WebKitWebView *v, gchar *uri,
@@ -293,11 +290,9 @@ static ParamName loadcommitted[] = {
 	DarkMode,
 	DefaultCharset,
 	FontSize,
-	FrameFlattening,
 	Geolocation,
 	HideBackground,
 	Inspector,
-	Java,
 //	KioskMode,
 	MediaManualPlay,
 	RunInFullscreen,
@@ -385,7 +380,6 @@ setup(void)
 		g_io_channel_set_flags(gchanin, g_io_channel_get_flags(gchanin)
 		                       | G_IO_FLAG_NONBLOCK, NULL);
 		g_io_channel_set_close_on_unref(gchanin, TRUE);
-		g_io_add_watch(gchanin, G_IO_IN, readsock, NULL);
 	}
 
 
@@ -584,6 +578,7 @@ loaduri(Client *c, const Arg *a)
 	if (g_str_has_prefix(uri, "http://")  ||
 	    g_str_has_prefix(uri, "https://") ||
 	    g_str_has_prefix(uri, "file://")  ||
+	    g_str_has_prefix(uri, "webkit://") ||
 	    g_str_has_prefix(uri, "about:")) {
 		url = g_strdup(uri);
 	} else {
@@ -689,7 +684,6 @@ gettogglestats(Client *c)
 	togglestats[4] = curconfig[LoadImages].val.i ?      'I' : 'i';
 	togglestats[5] = curconfig[JavaScript].val.i ?      'S' : 's';
 	togglestats[6] = curconfig[Style].val.i ?           'M' : 'm';
-	togglestats[7] = curconfig[FrameFlattening].val.i ? 'F' : 'f';
 	togglestats[8] = curconfig[Certificate].val.i ?     'X' : 'x';
 	togglestats[9] = curconfig[StrictTLS].val.i ?       'T' : 't';
 }
@@ -812,9 +806,6 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 	case FontSize:
 		webkit_settings_set_default_font_size(c->settings, a->i);
 		return; /* do not update */
-	case FrameFlattening:
-		webkit_settings_set_enable_frame_flattening(c->settings, a->i);
-		break;
 	case Geolocation:
 		refresh = 0;
 		break;
@@ -824,9 +815,6 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 		return; /* do not update */
 	case Inspector:
 		webkit_settings_set_enable_developer_extras(c->settings, a->i);
-		return; /* do not update */
-	case Java:
-		webkit_settings_set_enable_java(c->settings, a->i);
 		return; /* do not update */
 	case JavaScript:
 		webkit_settings_set_enable_javascript(c->settings, a->i);
@@ -868,7 +856,8 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 	case SpellLanguages:
 		return; /* do nothing */
 	case StrictTLS:
-		webkit_web_context_set_tls_errors_policy(c->context, a->i ?
+		webkit_website_data_manager_set_tls_errors_policy(
+		    webkit_web_view_get_website_data_manager(c->view), a->i ?
 		    WEBKIT_TLS_ERRORS_POLICY_FAIL :
 		    WEBKIT_TLS_ERRORS_POLICY_IGNORE);
 		break;
@@ -993,7 +982,8 @@ evalscript(Client *c, const char *jsstr, ...)
 	script = g_strdup_vprintf(jsstr, ap);
 	va_end(ap);
 
-	webkit_web_view_run_javascript(c->view, script, NULL, NULL, NULL);
+	webkit_web_view_evaluate_javascript(c->view, script, -1,
+	    NULL, NULL, NULL, NULL, NULL);
 	g_free(script);
 }
 
@@ -1138,10 +1128,8 @@ newview(Client *c, WebKitWebView *rv)
 		   "enable-caret-browsing", curconfig[CaretBrowsing].val.i,
 		   "enable-developer-extras", curconfig[Inspector].val.i,
 		   "enable-dns-prefetching", curconfig[DNSPrefetch].val.i,
-		   "enable-frame-flattening", curconfig[FrameFlattening].val.i,
 		   "enable-html5-database", curconfig[DiskCache].val.i,
 		   "enable-html5-local-storage", curconfig[DiskCache].val.i,
-		   "enable-java", curconfig[Java].val.i,
 		   "enable-javascript", curconfig[JavaScript].val.i,
 		   "enable-site-specific-quirks", curconfig[SiteQuirks].val.i,
 		   "enable-smooth-scrolling", curconfig[SmoothScrolling].val.i,
@@ -1174,12 +1162,9 @@ newview(Client *c, WebKitWebView *rv)
 
 		cookiemanager = webkit_web_context_get_cookie_manager(context);
 
-		/* rendering process model, can be a shared unique one
-		 * or one for each view */
-		webkit_web_context_set_process_model(context,
-		    WEBKIT_PROCESS_MODEL_MULTIPLE_SECONDARY_PROCESSES);
 		/* TLS */
-		webkit_web_context_set_tls_errors_policy(context,
+		webkit_website_data_manager_set_tls_errors_policy(
+		    webkit_web_context_get_website_data_manager(context),
 		    curconfig[StrictTLS].val.i ? WEBKIT_TLS_ERRORS_POLICY_FAIL :
 		    WEBKIT_TLS_ERRORS_POLICY_IGNORE);
 		/* disk cache */
@@ -1249,30 +1234,6 @@ newview(Client *c, WebKitWebView *rv)
 	setparameter(c, 0, DarkMode, &curconfig[DarkMode].val);
 
 	return v;
-}
-
-static gboolean
-readsock(GIOChannel *s, GIOCondition ioc, gpointer unused)
-{
-	static char msg[MSGBUFSZ];
-	GError *gerr = NULL;
-	gsize msgsz;
-
-	if (g_io_channel_read_chars(s, msg, sizeof(msg), &msgsz, &gerr) !=
-	    G_IO_STATUS_NORMAL) {
-		if (gerr) {
-			fprintf(stderr, "surf: error reading socket: %s\n",
-			        gerr->message);
-			g_error_free(gerr);
-		}
-		return TRUE;
-	}
-	if (msgsz < 2) {
-		fprintf(stderr, "surf: message too short: %d\n", msgsz);
-		return TRUE;
-	}
-
-	return TRUE;
 }
 
 void
@@ -1455,7 +1416,8 @@ createwindow(Client *c)
 		w = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
 		wmstr = g_path_get_basename(argv0);
-		gtk_window_set_wmclass(GTK_WINDOW(w), wmstr, "Surf");
+		/* deprecated since GTK 3.22 (GTK+ sets them to that value by default) */
+		/* gtk_window_set_wmclass(GTK_WINDOW(w), wmstr, "Surf"); */
 		g_free(wmstr);
 
 		wmstr = g_strdup_printf("%s[%"PRIu64"]", "Surf", c->pageid);
@@ -1693,8 +1655,7 @@ decidenavigation(WebKitPolicyDecision *d, Client *c)
 	case WEBKIT_NAVIGATION_TYPE_OTHER: /* fallthrough */
 	default:
 		/* Do not navigate to links with a "_blank" target (popup) */
-		if (webkit_navigation_policy_decision_get_frame_name(
-		    WEBKIT_NAVIGATION_POLICY_DECISION(d))) {
+		if (webkit_navigation_action_get_frame_name(a)) {
 			webkit_policy_decision_ignore(d);
 		} else {
 			/* Filter out navigation to different domain ? */
@@ -1754,6 +1715,7 @@ decideresource(WebKitPolicyDecision *d, Client *c)
 	    && !g_str_has_prefix(uri, "https://")
 	    && !g_str_has_prefix(uri, "about:")
 	    && !g_str_has_prefix(uri, "file://")
+	    && !g_str_has_prefix(uri, "webkit://")
 	    && !g_str_has_prefix(uri, "data:")
 	    && !g_str_has_prefix(uri, "blob:")
 	    && strlen(uri) > 0) {
@@ -1929,21 +1891,22 @@ zoom(Client *c, const Arg *a)
 static void
 msgext(Client *c, char type, const Arg *a)
 {
-	static char msg[MSGBUFSZ];
+	static unsigned char msg[MSGBUFSZ];
 	int ret;
 
 	if (spair[0] < 0)
 		return;
 
-	if ((ret = snprintf(msg, sizeof(msg), "%c%c%c", c->pageid, type, a->i))
-	    >= sizeof(msg)) {
+	ret = snprintf(msg, sizeof(msg), "%c%c%c",
+	               (unsigned char)c->pageid, type, (signed char)a->i);
+	if (ret >= sizeof(msg)) {
 		fprintf(stderr, "surf: message too long: %d\n", ret);
 		return;
 	}
 
 	if (send(spair[0], msg, ret, 0) != ret)
-		fprintf(stderr, "surf: error sending: %u%c%d (%d)\n",
-		        c->pageid, type, a->i, ret);
+		fprintf(stderr, "surf: error sending: %hhu/%c/%d (%d)\n",
+		        (unsigned char)c->pageid, type, a->i, ret);
 }
 
 void
