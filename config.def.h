@@ -128,7 +128,6 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
 #define BM_ADD(r) {\
         .v = (const char *[]){ "/bin/sh", "-c", \
             "(echo $(xprop -id $0 $1) | cut -d '\"' -f2 " \
-            "| sed 's/.*https*:\\/\\/\\(www\\.\\)\\?//' " \
             "&& cat ~/.config/surf/bookmarks) " \
             "| awk '!seen[$0]++' > ~/.config/surf/bookmarks.tmp && " \
             "mv ~/.config/surf/bookmarks.tmp ~/.config/surf/bookmarks", \
