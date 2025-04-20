@@ -57,4 +57,4 @@ surf-git-20170323-webkit2-searchengines.diff
 
 Last implemented commit
 -----------------------
-2024-03-24 14:24	webext: Process full messages	Quentin Rameau
+2025-04-19 10:01	Fix (2) some typo for kiosk mode in the man-page	Quentin Rameau

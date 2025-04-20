@@ -71,6 +71,7 @@ typedef enum {
 	KioskMode,
 	LoadImages,
 	MediaManualPlay,
+	PDFJSviewer,
 	PreferredLanguages,
 	RunInFullscreen,
 	ScrollBars,
@@ -295,6 +296,7 @@ static ParamName loadcommitted[] = {
 	Inspector,
 //	KioskMode,
 	MediaManualPlay,
+	PDFJSviewer,
 	RunInFullscreen,
 	ScrollBars,
 	SiteQuirks,
@@ -828,6 +830,8 @@ setparameter(Client *c, int refresh, ParamName p, const Arg *a)
 		webkit_settings_set_media_playback_requires_user_gesture(
 		    c->settings, a->i);
 		break;
+	case PDFJSviewer:
+		return; /* do nothing */
 	case PreferredLanguages:
 		return; /* do nothing */
 	case RunInFullscreen:
@@ -1718,6 +1722,7 @@ decideresource(WebKitPolicyDecision *d, Client *c)
 	    && !g_str_has_prefix(uri, "webkit://")
 	    && !g_str_has_prefix(uri, "data:")
 	    && !g_str_has_prefix(uri, "blob:")
+	    && !(g_str_has_prefix(uri, "webkit-pdfjs-viewer://") && curconfig[PDFJSviewer].val.i)
 	    && strlen(uri) > 0) {
 		for (i = 0; i < strlen(uri); i++) {
 			if (!g_ascii_isprint(uri[i])) {
@@ -1803,7 +1808,7 @@ parseuri(const gchar *uri) {
 					       uri + strlen(searchengines[i].token) + 1);
 	}
 
-	return g_strdup_printf("http://%s", uri);
+	return g_strdup_printf("https://%s", uri);
 }
 
 void

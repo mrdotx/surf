@@ -37,6 +37,7 @@ static Parameter defconfig[ParameterLast] = {
     [KioskMode]           =       { { .i = 0 },     },
     [LoadImages]          =       { { .i = 1 },     },
     [MediaManualPlay]     =       { { .i = 1 },     },
+    [PDFJSviewer]         =       { { .i = 1 },     },
     [PreferredLanguages]  =       { { .v = (char *[]){ NULL } }, },
     [RunInFullscreen]     =       { { .i = 0 },     },
     [ScrollBars]          =       { { .i = 1 },     },
