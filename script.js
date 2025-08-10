@@ -1,8 +1,8 @@
 /*
 path:   /home/klassiker/.local/share/repos/surf/script.js
 author: klassiker [mrdotx]
-github: https://github.com/mrdotx/surf
-date:   2021-01-15T14:03:41+0100
+url:    https://github.com/mrdotx/surf
+date:   2025-08-10T04:42:17+0200
 */
 
 var hint_num_str = '';
